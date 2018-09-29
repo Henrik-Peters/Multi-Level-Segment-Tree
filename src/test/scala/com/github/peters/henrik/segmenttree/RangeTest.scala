@@ -101,4 +101,108 @@ class RangeTest extends FlatSpec with Matchers {
     rangeB.overlaps(rangeA) should be (true)
   }
 
+  "A Range" should "overlap with the left border" in {
+    val rangeA = new Range(10, 20)
+    val rangeB = new Range(5, 15)
+    rangeA.overlaps(rangeB) should be (true)
+    rangeB.overlaps(rangeA) should be (true)
+  }
+
+  "A Range" should "overlap with the right border" in {
+    val rangeA = new Range(10, 20)
+    val rangeB = new Range(15, 25)
+    rangeA.overlaps(rangeB) should be (true)
+    rangeB.overlaps(rangeA) should be (true)
+  }
+
+  "A Range" should "overlap with the inclusive left border" in {
+    val rangeA = new Range(10, 20)
+    val rangeB = new Range(5, 10)
+    rangeA.overlaps(rangeB) should be (true)
+    rangeB.overlaps(rangeA) should be (true)
+  }
+
+  "A Range" should "overlap with the inclusive right border" in {
+    val rangeA = new Range(10, 20)
+    val rangeB = new Range(20, 25)
+    rangeA.overlaps(rangeB) should be (true)
+    rangeB.overlaps(rangeA) should be (true)
+  }
+
+  "A Range" should "not overlap with the next number of the left border" in {
+    val rangeA = new Range(10, 20)
+    val rangeB = new Range(5, 9)
+    rangeA.overlaps(rangeB) should be (false)
+    rangeB.overlaps(rangeA) should be (false)
+  }
+
+  "A Range" should "not overlap with the next number of the right border" in {
+    val rangeA = new Range(10, 20)
+    val rangeB = new Range(21, 25)
+    rangeA.overlaps(rangeB) should be (false)
+    rangeB.overlaps(rangeA) should be (false)
+  }
+
+  "A Range" should "overlap with a range in between" in {
+    val rangeA = new Range(10, 20)
+    val rangeB = new Range(13, 17)
+    rangeA.overlaps(rangeB) should be (true)
+    rangeB.overlaps(rangeA) should be (true)
+  }
+
+  "A Range" should "be disjointed with a lower range" in {
+    val rangeA = new Range(5, 10)
+    val rangeB = new Range(1, 3)
+    rangeA.disjoint(rangeB) should be (true)
+    rangeB.disjoint(rangeA) should be (true)
+  }
+
+  "A Range" should "be disjointed with a higher range" in {
+    val rangeA = new Range(5, 10)
+    val rangeB = new Range(16, 19)
+    rangeA.disjoint(rangeB) should be (true)
+    rangeB.disjoint(rangeA) should be (true)
+  }
+
+  "A Range" should "be disjointed with the next number of a lower range" in {
+    val rangeA = new Range(5, 10)
+    val rangeB = new Range(1, 4)
+    rangeA.disjoint(rangeB) should be (true)
+    rangeB.disjoint(rangeA) should be (true)
+  }
+
+  "A Range" should "be disjointed with the next number of a higher range" in {
+    val rangeA = new Range(5, 10)
+    val rangeB = new Range(11, 19)
+    rangeA.disjoint(rangeB) should be (true)
+    rangeB.disjoint(rangeA) should be (true)
+  }
+
+  "A Range" should "not be disjointed with itself" in {
+    val rangeA = new Range(5, 10)
+    val rangeB = new Range(5, 10)
+    rangeA.disjoint(rangeB) should be (false)
+    rangeB.disjoint(rangeA) should be (false)
+  }
+
+  "A Range" should "not be disjointed with an inner range" in {
+    val rangeA = new Range(5, 10)
+    val rangeB = new Range(7, 8)
+    rangeA.disjoint(rangeB) should be (false)
+    rangeB.disjoint(rangeA) should be (false)
+  }
+
+  "A Range" should "not be disjointed with a left common border range" in {
+    val rangeA = new Range(5, 10)
+    val rangeB = new Range(2, 5)
+    rangeA.disjoint(rangeB) should be (false)
+    rangeB.disjoint(rangeA) should be (false)
+  }
+
+  "A Range" should "not be disjointed with a right common border range" in {
+    val rangeA = new Range(5, 10)
+    val rangeB = new Range(10, 16)
+    rangeA.disjoint(rangeB) should be (false)
+    rangeB.disjoint(rangeA) should be (false)
+  }
 }
