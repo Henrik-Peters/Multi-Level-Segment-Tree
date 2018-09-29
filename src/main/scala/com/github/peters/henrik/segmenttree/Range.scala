@@ -25,8 +25,9 @@ class Range(val start: Int, val end: Int) {
   }
 
   def overlaps(other: Range): Boolean = {
-    (start >= other.start && start <= other.end) ||
-    (end >= other.end && end <= other.end)
+    (other.end >= start && other.end <= end) ||
+    (other.start >= start && other.start <= end) ||
+    (other.start <= start && other.end >= end)
   }
 
   def disjoint(other: Range): Boolean = {
