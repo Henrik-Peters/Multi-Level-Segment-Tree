@@ -9,10 +9,11 @@ package com.github.peters.henrik.segmenttree
   * Defines an inclusive range with [start, end].
   * Start must be less or equal than end.
   *
+  * @author Henrik Peters
   * @param start The left range bound (inclusive)
   * @param end The right range bound (inclusive)
   */
-class Range(start: Int, end: Int) {
+class Range(val start: Int, val end: Int) {
   require(start <= end)
 
   def contains(x: Int): Boolean = {
