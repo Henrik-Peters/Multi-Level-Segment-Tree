@@ -16,7 +16,7 @@ package com.github.peters.henrik.segmenttree
 class SegmentTree[T](data: Array[T], monoid: Monoid[T]) {
 
   private val root: TreeNode = buildTree(0, data.length - 1)
-  private val range = Range(0, data.length - 1)
+  private val rootRange = Range(0, data.length - 1)
 
   abstract class TreeNode {
     var value: T
@@ -48,8 +48,12 @@ class SegmentTree[T](data: Array[T], monoid: Monoid[T]) {
   }
 
   def query(left: Int, right: Int): Option[T] = {
-    if (range.contains(Range(left, right)))
-      Some(queryNode(Range(left, right), root))
+    query(Range(left, right))
+  }
+
+  def query(range: Range): Option[T] = {
+    if (rootRange.contains(range))
+      Some(queryNode(range, root))
     else
       None
   }

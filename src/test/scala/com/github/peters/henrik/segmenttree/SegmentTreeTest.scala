@@ -24,61 +24,76 @@ class SegmentTreeTest extends FlatSpec with Matchers {
 
   "query for the complete interval" should "be the root value" in {
     assert(tree.query(0, 5).get == 36)
+    assert(tree.query(Range(0, 5)).get == 36)
   }
 
   "query for a left exact matching interval" should "be the node value" in {
     assert(tree.query(0, 1).get == 4)
+    assert(tree.query(Range(0, 1)).get == 4)
   }
 
   "query for another left exact matching interval" should "be the node value" in {
     assert(tree.query(0, 2).get == 9)
+    assert(tree.query(Range(0, 2)).get == 9)
   }
 
   "query for a right exact matching interval" should "be the node value" in {
     assert(tree.query(3, 4).get == 16)
+    assert(tree.query(Range(3, 4)).get == 16)
   }
 
   "query for another right exact matching interval" should "be the node value" in {
     assert(tree.query(3, 5).get == 27)
+    assert(tree.query(Range(3, 5)).get == 27)
   }
 
   "query for two left different nodes" should "be the folded value" in {
     assert(tree.query(1, 2).get == 8)
+    assert(tree.query(Range(1, 2)).get == 8)
   }
 
   "query for two right different nodes" should "be the folded value" in {
     assert(tree.query(4, 5).get == 20)
+    assert(tree.query(Range(4, 5)).get == 20)
   }
 
   "query for an interval that splits over the root node" should "be the folded value" in {
     assert(tree.query(2, 3).get == 12)
+    assert(tree.query(Range(2, 3)).get == 12)
   }
 
   "query for an interval that splits more over the root node" should "be the folded value" in {
     assert(tree.query(1, 4).get == 24)
+    assert(tree.query(Range(1, 4)).get == 24)
   }
 
   "query for an interval out of the root range" should "be none" in {
     tree.query(7, 9) should be (None)
+    tree.query(Range(7, 9)) should be (None)
   }
 
   "query for a negative interval out of the root range" should "be none" in {
     tree.query(-5, -2) should be (None)
+    tree.query(Range(-5, -2)) should be (None)
   }
 
   "query for an interval next to the root range bound" should "be none" in {
     tree.query(6, 8) should be (None)
+    tree.query(Range(6, 8)) should be (None)
   }
 
   "query for a negative interval next to the root range bound" should "be none" in {
     tree.query(-5, -1) should be (None)
+    tree.query(Range(-5, -1)) should be (None)
   }
 
   "query for a overlapping interval out of the root range" should "be none" in {
     tree.query(3, 9) should be (None)
+    tree.query(Range(3, 9)) should be (None)
   }
 
   "query for a overlapping negative interval out of the root range" should "be none" in {
     tree.query(-5, 3) should be (None)
+    tree.query(Range(-5, 3)) should be (None)
   }
 }
