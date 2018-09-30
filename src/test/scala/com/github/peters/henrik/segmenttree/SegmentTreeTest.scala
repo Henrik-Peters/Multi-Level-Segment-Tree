@@ -57,4 +57,28 @@ class SegmentTreeTest extends FlatSpec with Matchers {
   "query for an interval that splits more over the root node" should "be the folded value" in {
     assert(tree.query(1, 4).get == 24)
   }
+
+  "query for an interval out of the root range" should "be none" in {
+    tree.query(7, 9) should be (None)
+  }
+
+  "query for a negative interval out of the root range" should "be none" in {
+    tree.query(-5, -2) should be (None)
+  }
+
+  "query for an interval next to the root range bound" should "be none" in {
+    tree.query(6, 8) should be (None)
+  }
+
+  "query for a negative interval next to the root range bound" should "be none" in {
+    tree.query(-5, -1) should be (None)
+  }
+
+  "query for a overlapping interval out of the root range" should "be none" in {
+    tree.query(3, 9) should be (None)
+  }
+
+  "query for a overlapping negative interval out of the root range" should "be none" in {
+    tree.query(-5, 3) should be (None)
+  }
 }
