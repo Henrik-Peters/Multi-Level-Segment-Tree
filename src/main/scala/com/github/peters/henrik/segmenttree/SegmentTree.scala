@@ -7,7 +7,7 @@ package com.github.peters.henrik.segmenttree
 
 /**
   * Defines the one-dimensional segment tree, which is constructed
-  * from the data array. Range queries take logarithm time.
+  * from the data array. Range queries take logarithmic time.
   *
   * @param data Construct the tree from this data
   * @param monoid Used to fold elements in the tree
@@ -22,7 +22,7 @@ class SegmentTree[T](data: Array[T], monoid: Monoid[T]) {
   }
 
   case class Node(
-     segment: Range,
+     range: Range,
      override var value: T,
      left: TreeNode,
      right: TreeNode
@@ -44,6 +44,37 @@ class SegmentTree[T](data: Array[T], monoid: Monoid[T]) {
     }
     else
       Leaf(left, data(left))
+  }
+
+  def query(left: Int, right: Int): Option[T] = {
+    if (left >= 0 && right <= data.length - 1)
+      Some(queryNode(Range(left, right), root))
+    else
+      None
+  }
+
+  private def queryNode(range: Range, node: TreeNode): T = {
+    node match {
+      case Node(subRange, value, leftChild, rightChild) =>
+        if (range.contains(subRange)) {
+          value
+
+        } else if (range.disjoint(subRange)) {
+          monoid.identity
+
+        } else {
+          monoid.fold(
+            queryNode(range, leftChild),
+            queryNode(range, rightChild))
+        }
+
+      case Leaf(index, value) =>
+        if (range.contains(index)) {
+          value
+        } else {
+          monoid.identity
+        }
+    }
   }
 
 }
