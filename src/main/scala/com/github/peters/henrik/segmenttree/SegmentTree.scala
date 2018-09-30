@@ -35,7 +35,7 @@ class SegmentTree[T](data: Array[T], monoid: Monoid[T]) {
 
   def buildTree(left: Int, right: Int): TreeNode = {
     if (left != right) {
-      val node = Node(new Range(left, right), monoid.identity,
+      val node = Node(Range(left, right), monoid.identity,
         buildTree(left, mid(left, right)),
         buildTree(mid(left, right) + 1, right))
 

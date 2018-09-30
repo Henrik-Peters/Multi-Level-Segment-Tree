@@ -13,7 +13,7 @@ package com.github.peters.henrik.segmenttree
   * @param start The left range bound (inclusive)
   * @param end The right range bound (inclusive)
   */
-class Range(val start: Int, val end: Int) {
+case class Range(start: Int, end: Int) {
   require(start <= end)
 
   def contains(x: Int): Boolean = {
