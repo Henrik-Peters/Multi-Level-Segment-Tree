@@ -5,6 +5,9 @@
 // ---------------------------------------------------------------------
 package com.github.peters.henrik.segmenttree
 
+import scala.sys.process._
+import java.io.{File, PrintWriter}
+
 /**
   * Defines the one-dimensional segment tree, which is constructed
   * from the data array. Range queries take logarithmic time.
@@ -82,4 +85,22 @@ class SegmentTree[T](data: Array[T], monoid: Monoid[T]) {
     }
   }
 
+  def dumpTree(dumpName: String): Unit = {
+    import language.postfixOps
+
+    "mkdir -p dump" !
+    val writer = new PrintWriter(new File("dump/" + dumpName + ".gv"))
+
+    writer.write("digraph G {\n")
+    writer.write("node [style=filled, fontname = \"arial\"];\n")
+    writer.write("graph [pad=\"0.1\", nodesep=\"1\", ranksep=\"1.5\"];\n")
+
+
+    writer.write("}\n")
+    writer.close()
+
+    "dot -Tpng dump/" + dumpName + ".gv -o dump/" + dumpName + ".png" !;
+    "xdg-open dump/" + dumpName + ".png" !;
+    "rm dump/" + dumpName + ".gv" !
+  }
 }
