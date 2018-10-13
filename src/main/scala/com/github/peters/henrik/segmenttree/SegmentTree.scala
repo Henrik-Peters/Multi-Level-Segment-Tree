@@ -91,6 +91,38 @@ class SegmentTree[T](data: Array[T], monoid: Monoid[T]) {
     "mkdir -p dump" !
     val writer = new PrintWriter(new File("dump/" + dumpName + ".gv"))
 
+    //Add all nodes to a list ordered by the depth and then by key
+    class DumpMetaData(val key: Int, val depth: Int)
+    var nodeList : List[(DumpMetaData,TreeNode)] = List()
+
+    object KeyGenerator {
+      var key : Int = 0
+      def getNextKey : Int = {key += 1; key}
+    }
+
+    def addToNodeList(node: TreeNode, depth: Int = 0): Unit = {
+      import KeyGenerator.getNextKey
+
+      node match {
+        case Node(_, _, leftChild, rightChild) =>
+          nodeList = (new DumpMetaData(getNextKey, depth), node) :: nodeList
+          addToNodeList(leftChild, depth + 1)
+          addToNodeList(rightChild, depth + 1)
+
+        case Leaf(_, _) =>
+          nodeList = (new DumpMetaData(getNextKey, depth), node) :: nodeList
+      }
+    }
+
+    addToNodeList(root)
+
+    //Sort by depth then key, so the left child will always come first
+    nodeList = nodeList.sortWith((a, b) => {
+      a._1.depth < b._1.depth || (a._1.depth == b._1.depth && a._1.key < b._1.key)
+    })
+
+    nodeList foreach {node => println("(" + node._1.key + ", " + node._1.depth + ") :" + node._2)}
+
     writer.write("digraph G {\n")
     writer.write("node [style=filled, fontname = \"arial\"];\n")
     writer.write("graph [pad=\"0.1\", nodesep=\"1\", ranksep=\"1.5\"];\n")
