@@ -114,6 +114,13 @@ class SegmentTree[T](data: Array[T], monoid: Monoid[T]) {
       }
     }
 
+    def getKeyByNode(node: TreeNode): Option[Int] = {
+      nodeList find {_._2 == node} match {
+        case Some((metaData, _)) => Some(metaData.key)
+        case None => None
+      }
+    }
+
     addToNodeList(root)
 
     //Sort by depth then key, so the left child will always come first
@@ -121,12 +128,35 @@ class SegmentTree[T](data: Array[T], monoid: Monoid[T]) {
       a._1.depth < b._1.depth || (a._1.depth == b._1.depth && a._1.key < b._1.key)
     })
 
-    nodeList foreach {node => println("(" + node._1.key + ", " + node._1.depth + ") :" + node._2)}
-
     writer.write("digraph G {\n")
     writer.write("node [style=filled, fontname = \"arial\"];\n")
     writer.write("graph [pad=\"0.1\", nodesep=\"1\", ranksep=\"1.5\"];\n")
 
+    //Create the edges from the node keys
+    nodeList foreach {node =>
+      node._2 match {
+        case Node(_, _, leftChild, rightChild) =>
+          writer.write(node._1.key + " -> " + getKeyByNode(leftChild).get + ";\n")
+          writer.write(node._1.key + " -> " + getKeyByNode(rightChild).get + ";\n")
+
+        case Leaf(_, _) =>
+      }
+    }
+
+    //Node format and text
+    nodeList foreach {node =>
+      node._2 match {
+        case Node(segment, value, _, _) =>
+          writer.write(node._1.key +
+            "[shape=record, fillcolor=\"#E2E2E2\", style=filled," +
+            "label=\"{" + value + "|[" + segment.start + "," + segment.end + "]}\"];\n")
+
+        case Leaf(index, value) =>
+          writer.write(node._1.key +
+            "[shape=record, fillcolor=\"#EEC591\", style=filled," +
+            "label=\"{" + value + "|[" + index + "]}\"];\n")
+      }
+    }
 
     writer.write("}\n")
     writer.close()
