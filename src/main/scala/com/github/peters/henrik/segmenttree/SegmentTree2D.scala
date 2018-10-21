@@ -15,7 +15,7 @@ import scala.language.postfixOps
   * @param monoid Used to fold the final elements in the tree
   * @tparam T Type of the final elements stored in the tree
   */
-class SegmentTree2D[T](matrix: Seq[Seq[T]], monoid: Monoid[T]) {
+class SegmentTree2D[T](val matrix: Seq[Seq[T]], val monoid: Monoid[T]) {
   type SegTree2D = SegmentTree[SegmentTree[T]]
 
   lazy val xRange: Int = matrix.head length
@@ -39,6 +39,16 @@ class SegmentTree2D[T](matrix: Seq[Seq[T]], monoid: Monoid[T]) {
 
   //The invariant is checked by the wrapped segment tree
   val tree: SegTree2D = mapMatrixToTree(matrix)
+
+  override def equals(obj: Any): Boolean = {
+    obj match {
+      case tree: SegmentTree2D[T] =>
+        matrix.equals(tree.matrix) &&
+          monoid.equals(tree.monoid)
+
+      case _ => false
+    }
+  }
 
   /**
     * Lifts the monoid of T to a monoid for segment trees. Segment trees
