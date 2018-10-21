@@ -22,10 +22,14 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
 
   val tree = new SegmentTree2D(simpleMatrix, IntegerAddition)
 
-  "query for a two-dimensional tree" should "be the folded value" in {
-    val q1: SegmentTree[Int] = tree.tree.query(0,1).get //y query range
-    val r: Int = q1.query(1,2).get //x query range
-    r shouldEqual 16
+  "query for a two-dimensional tree with range" should "be the folded value" in {
+    val yRange = Range(0, 1)
+    val xRange = Range(1, 2)
+    tree.query(yRange)(xRange).get shouldEqual 16
+  }
+
+  "query for a two-dimensional tree with ints" should "be the folded value" in {
+    tree.query(0, 2)(0, 1).get shouldEqual 27
   }
 
 }

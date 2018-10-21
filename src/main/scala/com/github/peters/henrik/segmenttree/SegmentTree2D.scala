@@ -38,15 +38,26 @@ class SegmentTree2D[T](val matrix: Seq[Seq[T]], val monoid: Monoid[T]) {
   }
 
   //The invariant is checked by the wrapped segment tree
-  val tree: SegTree2D = mapMatrixToTree(matrix)
+  private val tree: SegTree2D = mapMatrixToTree(matrix)
 
   override def equals(obj: Any): Boolean = {
     obj match {
       case tree: SegmentTree2D[T] =>
         matrix.equals(tree.matrix) &&
-          monoid.equals(tree.monoid)
+        monoid.equals(tree.monoid)
 
       case _ => false
+    }
+  }
+
+  def query(yStart: Int, yEnd: Int)(xStart: Int, xEnd: Int): Option[T] = {
+    query {Range(yStart, yEnd)} {Range(xStart, xEnd)}
+  }
+
+  def query(yRange: Range)(xRange: Range): Option[T] = {
+    tree.query(yRange) match {
+      case Some(subTree) => subTree.query(xRange)
+      case None => None
     }
   }
 
