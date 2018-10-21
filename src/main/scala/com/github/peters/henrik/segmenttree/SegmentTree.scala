@@ -85,6 +85,17 @@ class SegmentTree[T](data: Array[T], monoid: Monoid[T]) {
     }
   }
 
+  private def invariant(node: TreeNode = root): Boolean = {
+    node match {
+      case Node(segment, value, left, right) =>
+        val invFold = value.equals(monoid.fold(left.value, right.value))
+        invFold && invariant(left) && invariant(right)
+
+      case Leaf(_, _) =>
+        true
+    }
+  }
+
   def dumpTree(dumpName: String): Unit = {
     import language.postfixOps
 
