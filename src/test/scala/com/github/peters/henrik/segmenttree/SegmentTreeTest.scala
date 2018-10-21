@@ -22,10 +22,6 @@ class SegmentTreeTest extends FlatSpec with Matchers {
   val data = Array(1, 3, 5, 7, 9, 11)
   val tree = new SegmentTree(data, IntegerAddition)
 
-  "dumpTree" should "create the dump folder" in {
-    tree.dumpTree("MyDump")
-  }
-
   "query for the complete interval" should "be the root value" in {
     assert(tree.query(0, 5).get == 36)
     assert(tree.query(Range(0, 5)).get == 36)

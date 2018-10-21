@@ -20,6 +20,7 @@ class SegmentTree[T](data: Array[T], monoid: Monoid[T]) {
 
   private val root: TreeNode = buildTree(0, data.length - 1)
   private val rootRange = Range(0, data.length - 1)
+  assert(invariant())
 
   abstract class TreeNode {
     var value: T
