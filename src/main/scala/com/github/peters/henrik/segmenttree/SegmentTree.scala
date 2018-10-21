@@ -89,7 +89,27 @@ class SegmentTree[T](data: Array[T], monoid: Monoid[T]) {
     node match {
       case Node(segment, value, left, right) =>
         val invFold = value.equals(monoid.fold(left.value, right.value))
-        invFold && invariant(left) && invariant(right)
+
+        val invLeftSegment = left match {
+          case Node(leftSegment, _, _, _) =>
+            leftSegment.start == segment.start &&
+              leftSegment.end == mid(segment.start, segment.end)
+
+          case Leaf(index, _) =>
+            segment.start == index
+        }
+
+        val invRightSegment = right match {
+          case Node(rightSegment, _, _, _) =>
+            rightSegment.start == mid(segment.start, segment.end) + 1 &&
+              rightSegment.end == segment.end
+
+          case Leaf(index, _) =>
+            segment.end == index
+        }
+
+        invFold && invLeftSegment && invRightSegment &&
+        invariant(left) && invariant(right)
 
       case Leaf(_, _) =>
         true
