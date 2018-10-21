@@ -16,7 +16,7 @@ import java.io.{File, PrintWriter}
   * @param monoid Used to fold elements in the tree
   * @tparam T Type of the elements stored in the tree
   */
-class SegmentTree[T](data: Array[T], monoid: Monoid[T]) {
+class SegmentTree[T](val data: Seq[T], monoid: Monoid[T]) {
 
   private val root: TreeNode = buildTree(0, data.length - 1)
   private val rootRange = Range(0, data.length - 1)

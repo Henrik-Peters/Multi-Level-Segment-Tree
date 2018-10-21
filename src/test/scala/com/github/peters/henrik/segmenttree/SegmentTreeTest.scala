@@ -19,7 +19,7 @@ class SegmentTreeTest extends FlatSpec with Matchers {
     def identity: String = ""
   }
 
-  val data = Array(1, 3, 5, 7, 9, 11)
+  val data = List(1, 3, 5, 7, 9, 11)
   val tree = new SegmentTree(data, IntegerAddition)
 
   "query for the complete interval" should "be the root value" in {
