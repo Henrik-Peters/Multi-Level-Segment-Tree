@@ -86,6 +86,25 @@ class SegmentTree[T](val data: Seq[T], val monoid: Monoid[T]) {
     }
   }
 
+  def modify(index: Int, newValue: T): Boolean = {
+    modify(index, newValue, root)
+  }
+
+  private def modify(index: Int, newValue: T, node: TreeNode): Boolean = {
+    node match {
+      case Node(segment, _, left, right) if segment.contains(index) =>
+        val modified = modify(index, newValue, left) || modify(index, newValue, right)
+        node.value = monoid.fold(left.value, right.value)
+        modified
+
+      case Leaf(idx, _) if index == idx =>
+        node.value = newValue
+        true
+
+      case _ => false
+    }
+  }
+
   private def invariant(node: TreeNode = root): Boolean = {
     node match {
       case Node(segment, value, left, right) =>
