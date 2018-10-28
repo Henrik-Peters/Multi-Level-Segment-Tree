@@ -66,13 +66,12 @@ class SegmentTree2D[T](val matrix: Seq[Seq[T]], val monoid: Monoid[T]) {
     * are folded by applying the monoid for the type T to their leafs.
     */
   object TreeMonoid extends Monoid[SegmentTree[T]] {
+    lazy val neutralTree = new SegmentTree[T](Seq.fill (xRange) (monoid.identity), monoid)
 
     override def fold(a: SegmentTree[T], b: SegmentTree[T]): SegmentTree[T] = {
       new SegmentTree[T](foldSequences (a.data) (b.data), monoid)
     }
 
-    override def identity: SegmentTree[T] = {
-      new SegmentTree[T](Seq.fill (xRange) (monoid.identity), monoid)
-    }
+    override def identity: SegmentTree[T] = neutralTree
   }
 }
