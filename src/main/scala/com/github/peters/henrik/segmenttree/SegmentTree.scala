@@ -87,7 +87,9 @@ class SegmentTree[T](val data: Seq[T], val monoid: Monoid[T]) {
   }
 
   def modify(index: Int, newValue: T): Boolean = {
-    modify(index, newValue, root)
+    val modified = modify(index, newValue, root)
+    assert(invariant())
+    modified
   }
 
   private def modify(index: Int, newValue: T, node: TreeNode): Boolean = {
