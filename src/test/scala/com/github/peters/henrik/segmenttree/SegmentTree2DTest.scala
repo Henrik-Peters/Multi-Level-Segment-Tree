@@ -32,4 +32,9 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
     tree.query(0, 2)(0, 1).get shouldEqual 27
   }
 
+  "modify for a two-dimensional tree with ints" should "update both inner trees" in {
+    assert(tree.modify(1)(1){10})
+    tree.query(0, 1)(1, 2).get shouldEqual 21
+  }
+
 }

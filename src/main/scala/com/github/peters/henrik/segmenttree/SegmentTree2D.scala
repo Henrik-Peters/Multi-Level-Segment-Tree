@@ -61,6 +61,17 @@ class SegmentTree2D[T](val matrix: Seq[Seq[T]], val monoid: Monoid[T]) {
     }
   }
 
+  def modifyLeaf(y: Int)(row: Seq[T]): Boolean = {
+    tree.modify(y, mapSeqToTree {row})
+  }
+
+  def modify(y: Int)(x: Int)(newValue: T): Boolean = {
+    tree.query(y, y) match {
+      case Some(leaf) => leaf.modify(x, newValue) && tree.modify(y, leaf)
+      case None => false
+    }
+  }
+
   /**
     * Lifts the monoid of T to a monoid for segment trees. Segment trees
     * are folded by applying the monoid for the type T to their leafs.
