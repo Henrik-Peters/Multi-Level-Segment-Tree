@@ -19,6 +19,12 @@ class SegmentTreeTest extends FlatSpec with Matchers {
     def identity: String = ""
   }
 
+  "A single element" should "produce a single leaf as tree" in {
+    val singleData = Array(5)
+    val leafTree = new SegmentTree(singleData, IntegerAddition)
+    assert(leafTree.query(0, 0).get == 5)
+  }
+
   val data = List(1, 3, 5, 7, 9, 11)
   val tree = new SegmentTree(data, IntegerAddition)
 
@@ -95,5 +101,125 @@ class SegmentTreeTest extends FlatSpec with Matchers {
   "query for a overlapping negative interval out of the root range" should "be none" in {
     tree.query(-5, 3) should be (None)
     tree.query(Range(-5, 3)) should be (None)
+  }
+
+  "modify for the index 0" should "update the leaf and upper folded values" in {
+    assert(tree.modify(0, 2))
+    assert(tree.query(0, 0).get == 2)
+    assert(tree.query(1, 1).get == 3)
+    assert(tree.query(2, 2).get == 5)
+    assert(tree.query(3, 3).get == 7)
+    assert(tree.query(4, 4).get == 9)
+    assert(tree.query(5, 5).get == 11)
+    assert(tree.query(0, 1).get == 5)
+    assert(tree.query(0, 2).get == 10)
+    assert(tree.query(0, 5).get == 37)
+    assert(tree.query(3, 5).get == 27)
+    assert(tree.query(3, 4).get == 16)
+  }
+
+  "modify for the index 1" should "update the leaf and upper folded values" in {
+    assert(tree.modify(1, 8))
+    assert(tree.query(0, 0).get == 2)
+    assert(tree.query(1, 1).get == 8)
+    assert(tree.query(2, 2).get == 5)
+    assert(tree.query(3, 3).get == 7)
+    assert(tree.query(4, 4).get == 9)
+    assert(tree.query(5, 5).get == 11)
+    assert(tree.query(0, 1).get == 10)
+    assert(tree.query(0, 2).get == 15)
+    assert(tree.query(0, 5).get == 42)
+    assert(tree.query(3, 5).get == 27)
+    assert(tree.query(3, 4).get == 16)
+  }
+
+  "modify for the index 2" should "update the leaf and upper folded values" in {
+    assert(tree.modify(2, 1))
+    assert(tree.query(0, 0).get == 2)
+    assert(tree.query(1, 1).get == 8)
+    assert(tree.query(2, 2).get == 1)
+    assert(tree.query(3, 3).get == 7)
+    assert(tree.query(4, 4).get == 9)
+    assert(tree.query(5, 5).get == 11)
+    assert(tree.query(0, 1).get == 10)
+    assert(tree.query(0, 2).get == 11)
+    assert(tree.query(0, 5).get == 38)
+    assert(tree.query(3, 5).get == 27)
+    assert(tree.query(3, 4).get == 16)
+  }
+
+  "modify for the index 3" should "update the leaf and upper folded values" in {
+    assert(tree.modify(3, 4))
+    assert(tree.query(0, 0).get == 2)
+    assert(tree.query(1, 1).get == 8)
+    assert(tree.query(2, 2).get == 1)
+    assert(tree.query(3, 3).get == 4)
+    assert(tree.query(4, 4).get == 9)
+    assert(tree.query(5, 5).get == 11)
+    assert(tree.query(0, 1).get == 10)
+    assert(tree.query(0, 2).get == 11)
+    assert(tree.query(0, 5).get == 35)
+    assert(tree.query(3, 5).get == 24)
+    assert(tree.query(3, 4).get == 13)
+  }
+
+  "modify for the index 4" should "update the leaf and upper folded values" in {
+    assert(tree.modify(4, 2))
+    assert(tree.query(0, 0).get == 2)
+    assert(tree.query(1, 1).get == 8)
+    assert(tree.query(2, 2).get == 1)
+    assert(tree.query(3, 3).get == 4)
+    assert(tree.query(4, 4).get == 2)
+    assert(tree.query(5, 5).get == 11)
+    assert(tree.query(0, 1).get == 10)
+    assert(tree.query(0, 2).get == 11)
+    assert(tree.query(0, 5).get == 28)
+    assert(tree.query(3, 5).get == 17)
+    assert(tree.query(3, 4).get == 6)
+  }
+
+  "modify for the index 5" should "update the leaf and upper folded values" in {
+    assert(tree.modify(5, 7))
+    assert(tree.query(0, 0).get == 2)
+    assert(tree.query(1, 1).get == 8)
+    assert(tree.query(2, 2).get == 1)
+    assert(tree.query(3, 3).get == 4)
+    assert(tree.query(4, 4).get == 2)
+    assert(tree.query(5, 5).get == 7)
+    assert(tree.query(0, 1).get == 10)
+    assert(tree.query(0, 2).get == 11)
+    assert(tree.query(0, 5).get == 24)
+    assert(tree.query(3, 5).get == 13)
+    assert(tree.query(3, 4).get == 6)
+  }
+
+  "modify for the index -1" should "be false and not make any changes" in {
+    assert(!tree.modify(-1, 100))
+    assert(tree.query(0, 0).get == 2)
+    assert(tree.query(1, 1).get == 8)
+    assert(tree.query(2, 2).get == 1)
+    assert(tree.query(3, 3).get == 4)
+    assert(tree.query(4, 4).get == 2)
+    assert(tree.query(5, 5).get == 7)
+    assert(tree.query(0, 1).get == 10)
+    assert(tree.query(0, 2).get == 11)
+    assert(tree.query(0, 5).get == 24)
+    assert(tree.query(3, 5).get == 13)
+    assert(tree.query(3, 4).get == 6)
+  }
+
+  "modify for the index 6" should "be false and not make any changes" in {
+    assert(!tree.modify(-1, 100))
+    assert(tree.query(0, 0).get == 2)
+    assert(tree.query(1, 1).get == 8)
+    assert(tree.query(2, 2).get == 1)
+    assert(tree.query(3, 3).get == 4)
+    assert(tree.query(4, 4).get == 2)
+    assert(tree.query(5, 5).get == 7)
+    assert(tree.query(0, 1).get == 10)
+    assert(tree.query(0, 2).get == 11)
+    assert(tree.query(0, 5).get == 24)
+    assert(tree.query(3, 5).get == 13)
+    assert(tree.query(3, 4).get == 6)
   }
 }
