@@ -21,12 +21,12 @@ class SegmentTreeTest extends FlatSpec with Matchers {
 
   "A single element" should "produce a single leaf as tree" in {
     val singleData = Array(5)
-    val leafTree = new SegmentTree(singleData, IntegerAddition)
+    val leafTree = SegmentTree.fromSequence(singleData, IntegerAddition)
     assert(leafTree.query(0, 0).get == 5)
   }
 
   val data = List(1, 3, 5, 7, 9, 11)
-  val tree = new SegmentTree(data, IntegerAddition)
+  val tree: SegmentTree[Int] = SegmentTree.fromSequence(data, IntegerAddition)
 
   "query for the complete interval" should "be the root value" in {
     assert(tree.query(0, 5).get == 36)

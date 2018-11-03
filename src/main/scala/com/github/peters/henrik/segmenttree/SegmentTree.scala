@@ -9,46 +9,67 @@ import scala.sys.process._
 import java.io.{File, PrintWriter}
 
 /**
-  * Defines the one-dimensional segment tree, which is constructed
-  * from the data array. Range queries take logarithmic time.
-  *
-  * @param data Construct the tree from this data
-  * @param monoid Used to fold elements in the tree
-  * @tparam T Type of the elements stored in the tree
+  * Factory singleton for creating one-dimensional segment trees.
+  * Trees are built from data collections with monoids.
   */
-class SegmentTree[T](val data: Seq[T], val monoid: Monoid[T]) {
+object SegmentTree {
 
-  private val root: TreeNode = buildTree(0, data.length - 1)
-  private val rootRange = Range(0, data.length - 1)
-  assert(invariant())
-
-  abstract class TreeNode {
-    var value: T
+  def fromSequence[T](data: Seq[T], monoid: Monoid[T]): SegmentTree[T] = {
+    new SegmentTree(buildTree {data} {monoid}, monoid)
   }
-
-  case class Node(
-     range: Range,
-     override var value: T,
-     left: TreeNode,
-     right: TreeNode
-  ) extends TreeNode
-
-  case class Leaf(index: Int, override var value: T) extends TreeNode
-
 
   private def mid(left: Int, right: Int) = (left + right) / 2
 
-  def buildTree(left: Int, right: Int): TreeNode = {
-    if (left != right) {
-      val node = Node(Range(left, right), monoid.identity,
-        buildTree(left, mid(left, right)),
-        buildTree(mid(left, right) + 1, right))
+  private def buildTree[T]: Seq[T] => Monoid[T] => TreeNode[T] = {
+    seq => monoid => {
+      def build: Int => Int => TreeNode[T] = left => right => {
+        if (left != right) {
+          val node = Node[T](Range(left, right), monoid.identity,
+            build         (left)         (mid(left, right)),
+            build (mid(left, right) + 1)      (right))
 
-      node.value = monoid.fold(node.left.value, node.right.value)
-      node
+          node.value = monoid.fold(node.left.value, node.right.value)
+          node
+        }
+        else
+          Leaf(left, seq(left))
+      }
+
+      build (0) (seq.length - 1)
     }
-    else
-      Leaf(left, data(left))
+  }
+}
+
+abstract class TreeNode[T] {
+  var value: T
+}
+
+case class Node[T](
+  range: Range,
+  override var value: T,
+  left: TreeNode[T],
+  right: TreeNode[T]
+) extends TreeNode[T]
+
+case class Leaf[T](index: Int, override var value: T) extends TreeNode[T]
+
+/**
+  * Defines the one-dimensional segment tree, which is constructed
+  * from the companion object. Range queries take logarithmic time.
+  *
+  * @param root The top level node of the tree
+  * @param monoid Used to fold elements in the tree
+  * @tparam T Type of the elements stored in the tree
+  */
+class SegmentTree[T](root: TreeNode[T], val monoid: Monoid[T]) {
+  import SegmentTree._
+  assert(invariant())
+
+  private lazy val rootRange: Range = {
+    root match {
+      case Node(range, _, _, _) => range
+      case Leaf(_, _) => Range(0, 1)
+    }
   }
 
   def query(left: Int, right: Int): Option[T] = {
@@ -62,7 +83,7 @@ class SegmentTree[T](val data: Seq[T], val monoid: Monoid[T]) {
       None
   }
 
-  private def queryNode(range: Range, node: TreeNode): T = {
+  private def queryNode(range: Range, node: TreeNode[T]): T = {
     node match {
       case Node(subRange, value, leftChild, rightChild) =>
         if (range.contains(subRange)) {
@@ -92,7 +113,7 @@ class SegmentTree[T](val data: Seq[T], val monoid: Monoid[T]) {
     modified
   }
 
-  private def modify(index: Int, newValue: T, node: TreeNode): Boolean = {
+  private def modify(index: Int, newValue: T, node: TreeNode[T]): Boolean = {
     node match {
       case Node(segment, _, left, right) if segment.contains(index) =>
         val modified = modify(index, newValue, left) || modify(index, newValue, right)
@@ -107,7 +128,7 @@ class SegmentTree[T](val data: Seq[T], val monoid: Monoid[T]) {
     }
   }
 
-  private def invariant(node: TreeNode = root): Boolean = {
+  private def invariant(node: TreeNode[T] = root): Boolean = {
     node match {
       case Node(segment, value, left, right) =>
         val invFold = value.equals(monoid.fold(left.value, right.value))
@@ -138,16 +159,6 @@ class SegmentTree[T](val data: Seq[T], val monoid: Monoid[T]) {
     }
   }
 
-  override def equals(obj: Any): Boolean = {
-    obj match {
-      case tree: SegmentTree[T] =>
-        data.equals(tree.data) &&
-        monoid.equals(tree.monoid)
-
-      case _ => false
-    }
-  }
-
   def dumpTree(dumpName: String): Unit = {
     import language.postfixOps
 
@@ -156,14 +167,14 @@ class SegmentTree[T](val data: Seq[T], val monoid: Monoid[T]) {
 
     //Add all nodes to a list ordered by the depth and then by key
     class DumpMetaData(val key: Int, val depth: Int)
-    var nodeList : List[(DumpMetaData,TreeNode)] = List()
+    var nodeList : List[(DumpMetaData,TreeNode[T])] = List()
 
     object KeyGenerator {
       var key : Int = 0
       def getNextKey : Int = {key += 1; key}
     }
 
-    def addToNodeList(node: TreeNode, depth: Int = 0): Unit = {
+    def addToNodeList(node: TreeNode[T], depth: Int = 0): Unit = {
       import KeyGenerator.getNextKey
 
       node match {
@@ -177,7 +188,7 @@ class SegmentTree[T](val data: Seq[T], val monoid: Monoid[T]) {
       }
     }
 
-    def getKeyByNode(node: TreeNode): Option[Int] = {
+    def getKeyByNode(node: TreeNode[T]): Option[Int] = {
       nodeList find {_._2 == node} match {
         case Some((metaData, _)) => Some(metaData.key)
         case None => None
