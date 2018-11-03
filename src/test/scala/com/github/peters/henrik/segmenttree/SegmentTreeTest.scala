@@ -222,4 +222,80 @@ class SegmentTreeTest extends FlatSpec with Matchers {
     assert(tree.query(3, 5).get == 13)
     assert(tree.query(3, 4).get == 6)
   }
+
+  "Combining trees which are just leafs" should "be the combined result leaf" in {
+    val fstTree = SegmentTree.fromSequence(Seq(1), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(2), IntegerAddition)
+    val result = SegmentTree.combineTrees(fstTree, sndTree, IntegerAddition).get
+
+    assert(result.query(0, 0).get == 3)
+  }
+
+  "Combining trees with 2 elements" should "be the combined result tree" in {
+    val fstTree = SegmentTree.fromSequence(Seq(1, 2), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(10, 11), IntegerAddition)
+    val result = SegmentTree.combineTrees(fstTree, sndTree, IntegerAddition).get
+
+    assert(result.query(0, 0).get == 11)
+    assert(result.query(1, 1).get == 13)
+    assert(result.query(0, 1).get == 24)
+  }
+
+  "Combining trees with 3 elements" should "be the combined result tree" in {
+    val fstTree = SegmentTree.fromSequence(Seq(1, 2, 3), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(4, 5, 6), IntegerAddition)
+    val result = SegmentTree.combineTrees(fstTree, sndTree, IntegerAddition).get
+
+    assert(result.query(0, 0).get == 5)
+    assert(result.query(1, 1).get == 7)
+    assert(result.query(2, 2).get == 9)
+    assert(result.query(0, 2).get == 21)
+    assert(result.query(0, 1).get == 12)
+  }
+
+  "Combining trees with 4 elements" should "be the combined result tree" in {
+    val fstTree = SegmentTree.fromSequence(Seq(1, 2, 3, 4), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(11, 12, 13, 14), IntegerAddition)
+    val result = SegmentTree.combineTrees(fstTree, sndTree, IntegerAddition).get
+
+    assert(result.query(0, 0).get == 12)
+    assert(result.query(1, 1).get == 14)
+    assert(result.query(2, 2).get == 16)
+    assert(result.query(3, 3).get == 18)
+    assert(result.query(0, 1).get == 26)
+    assert(result.query(0, 3).get == 60)
+    assert(result.query(2, 3).get == 34)
+  }
+
+  "Combining trees with 5 elements" should "be the combined result tree" in {
+    val fstTree = SegmentTree.fromSequence(Seq(1, 2, 3, 4, 5), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(21, 22, 23, 24, 25), IntegerAddition)
+    val result = SegmentTree.combineTrees(fstTree, sndTree, IntegerAddition).get
+
+    assert(result.query(0, 0).get == 22)
+    assert(result.query(1, 1).get == 24)
+    assert(result.query(2, 2).get == 26)
+    assert(result.query(3, 3).get == 28)
+    assert(result.query(4, 4).get == 30)
+    assert(result.query(0, 1).get == 46)
+    assert(result.query(0, 2).get == 72)
+    assert(result.query(0, 4).get == 130)
+    assert(result.query(3, 4).get == 58)
+  }
+
+  "Combining trees with different element amount" should "be none" in {
+    val fstTree = SegmentTree.fromSequence(Seq(1, 2, 3), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(4, 5, 6, 7, 8), IntegerAddition)
+    val result = SegmentTree.combineTrees(fstTree, sndTree, IntegerAddition)
+
+    assert(result.isEmpty)
+  }
+
+  "Combining a leaf with 2 elements" should "be none" in {
+    val fstTree = SegmentTree.fromSequence(Seq(1), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(2, 3), IntegerAddition)
+    val result = SegmentTree.combineTrees(fstTree, sndTree, IntegerAddition)
+
+    assert(result.isEmpty)
+  }
 }
