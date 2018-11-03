@@ -20,7 +20,7 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
     Seq(7, 8, 9)
   )
 
-  val tree = new SegmentTree2D(simpleMatrix, IntegerAddition)
+  val tree: SegmentTree2D[Int] = SegmentTree2D.fromMatrix(simpleMatrix, IntegerAddition)
 
   "query for a two-dimensional tree with range" should "be the folded value" in {
     val yRange = Range(0, 1)

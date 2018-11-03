@@ -42,7 +42,7 @@ object SegmentTree {
 
   private def mid(left: Int, right: Int) = (left + right) / 2
 
-  private def buildTree[T]: Seq[T] => Monoid[T] => TreeNode[T] = {
+  private[segmenttree] def buildTree[T]: Seq[T] => Monoid[T] => TreeNode[T] = {
     seq => monoid => {
       def build: Int => Int => TreeNode[T] = left => right => {
         if (left != right) {
@@ -87,7 +87,7 @@ class SegmentTree[T](private val root: TreeNode[T], val monoid: Monoid[T]) {
   import SegmentTree._
   assert(invariant())
 
-  private lazy val rootRange: Range = {
+  private[segmenttree] lazy val rootRange: Range = {
     root match {
       case Node(range, _, _, _) => range
       case Leaf(_, _) => Range(0, 1)
