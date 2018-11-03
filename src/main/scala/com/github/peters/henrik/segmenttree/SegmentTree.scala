@@ -18,6 +18,28 @@ object SegmentTree {
     new SegmentTree(buildTree {data} {monoid}, monoid)
   }
 
+  def combineTrees[T](a: SegmentTree[T], b: SegmentTree[T], monoid: Monoid[T]): Option[SegmentTree[T]] = {
+    def build: TreeNode[T] => TreeNode[T] => TreeNode[T] = fstTree => sndTree => {
+      (fstTree, sndTree) match {
+
+        case (fstNode: Node[T], sndNode: Node[T]) =>
+          Node[T](fstNode.range,
+            monoid.fold(fstNode.value, sndNode.value),
+            build {fstNode.left} {sndNode.left},
+            build {fstNode.right} {sndNode.right})
+
+        case (fstLeaf: Leaf[T], sndLeaf: Leaf[T]) =>
+          Leaf(fstLeaf.index, monoid.fold(fstLeaf.value, sndLeaf.value))
+
+        case _ => null
+      }
+    }
+
+    if (a.rootRange == b.rootRange) {
+      Some(new SegmentTree(build {a.root} {b.root}, monoid))
+    } else None
+  }
+
   private def mid(left: Int, right: Int) = (left + right) / 2
 
   private def buildTree[T]: Seq[T] => Monoid[T] => TreeNode[T] = {
@@ -61,7 +83,7 @@ case class Leaf[T](index: Int, override var value: T) extends TreeNode[T]
   * @param monoid Used to fold elements in the tree
   * @tparam T Type of the elements stored in the tree
   */
-class SegmentTree[T](root: TreeNode[T], val monoid: Monoid[T]) {
+class SegmentTree[T](private val root: TreeNode[T], val monoid: Monoid[T]) {
   import SegmentTree._
   assert(invariant())
 
