@@ -90,7 +90,7 @@ class SegmentTree[T](private val root: TreeNode[T], val monoid: Monoid[T]) {
   private[segmenttree] lazy val rootRange: Range = {
     root match {
       case Node(range, _, _, _) => range
-      case Leaf(_, _) => Range(0, 1)
+      case Leaf(_, _) => Range(0, 0)
     }
   }
 
