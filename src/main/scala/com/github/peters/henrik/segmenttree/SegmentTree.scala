@@ -150,6 +150,16 @@ class SegmentTree[T](private val root: TreeNode[T], val monoid: Monoid[T]) {
     }
   }
 
+  override def equals(obj: Any): Boolean = {
+    obj match {
+      case tree: SegmentTree[T] =>
+        root.equals(tree.root) &&
+        monoid.equals(tree.monoid)
+
+      case _ => false
+    }
+  }
+
   private def invariant(node: TreeNode[T] = root): Boolean = {
     node match {
       case Node(segment, value, left, right) =>

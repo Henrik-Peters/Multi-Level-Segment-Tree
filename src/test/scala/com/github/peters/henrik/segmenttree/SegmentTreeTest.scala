@@ -14,6 +14,11 @@ class SegmentTreeTest extends FlatSpec with Matchers {
     def identity: Int = 0
   }
 
+  object IntegerMultiplication extends Monoid[Int] {
+    def fold(a: Int, b: Int): Int = a * b
+    def identity: Int = 1
+  }
+
   object StringConcatenation extends Monoid[String] {
     def fold(a: String, b: String): String = a concat b
     def identity: String = ""
@@ -297,5 +302,82 @@ class SegmentTreeTest extends FlatSpec with Matchers {
     val result = SegmentTree.combineTrees(fstTree, sndTree, IntegerAddition)
 
     assert(result.isEmpty)
+  }
+
+  "Equals for two identical leafs" should "be true" in {
+    val fstTree = SegmentTree.fromSequence(Seq(1), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(1), IntegerAddition)
+    assert(fstTree.equals(sndTree))
+    assert(sndTree.equals(fstTree))
+  }
+
+  "Equals for two identical leafs with different monoids" should "be false" in {
+    val fstTree = SegmentTree.fromSequence(Seq(1), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(1), IntegerMultiplication)
+    assert(!fstTree.equals(sndTree))
+    assert(!sndTree.equals(fstTree))
+  }
+
+  "Equals for two identical trees with 2 elements" should "be true" in {
+    val fstTree = SegmentTree.fromSequence(Seq(1, 2), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(1, 2), IntegerAddition)
+    assert(fstTree.equals(sndTree))
+    assert(sndTree.equals(fstTree))
+  }
+
+  "Equals for two identical trees with 3 elements" should "be true" in {
+    val fstTree = SegmentTree.fromSequence(Seq(1, 2, 3), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(1, 2, 3), IntegerAddition)
+    assert(fstTree.equals(sndTree))
+    assert(sndTree.equals(fstTree))
+  }
+
+  "Equals for two identical trees with 4 elements" should "be true" in {
+    val fstTree = SegmentTree.fromSequence(Seq(5, 6, 7, 8), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(5, 6, 7, 8), IntegerAddition)
+    assert(fstTree.equals(sndTree))
+    assert(sndTree.equals(fstTree))
+  }
+
+  "Equals for two identical trees with 5 elements" should "be true" in {
+    val fstTree = SegmentTree.fromSequence(Seq(5, 11, 2, 13, 4), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(5, 11, 2, 13, 4), IntegerAddition)
+    assert(fstTree.equals(sndTree))
+    assert(sndTree.equals(fstTree))
+  }
+
+  "Equals for two different trees with 2 elements" should "be false" in {
+    val fstTree = SegmentTree.fromSequence(Seq(5, 11), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(5), IntegerAddition)
+    assert(!fstTree.equals(sndTree))
+    assert(!sndTree.equals(fstTree))
+  }
+
+  "Equals for two different trees with 3 elements" should "be false" in {
+    val fstTree = SegmentTree.fromSequence(Seq(5, 11, 13), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(5, 11), IntegerAddition)
+    assert(!fstTree.equals(sndTree))
+    assert(!sndTree.equals(fstTree))
+  }
+
+  "Equals for two different trees with a lot of elements" should "be false" in {
+    val fstTree = SegmentTree.fromSequence(Seq(5, 11, 13, 17, 21, 23), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(5, 11, 13), IntegerAddition)
+    assert(!fstTree.equals(sndTree))
+    assert(!sndTree.equals(fstTree))
+  }
+
+  "Equals for two different trees with the same number of elements" should "be false" in {
+    val fstTree = SegmentTree.fromSequence(Seq(5, 11, 12), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(5, 11, 13), IntegerAddition)
+    assert(!fstTree.equals(sndTree))
+    assert(!sndTree.equals(fstTree))
+  }
+
+  "Equals for two different but symmetric trees" should "be false" in {
+    val fstTree = SegmentTree.fromSequence(Seq(2, 3), IntegerAddition)
+    val sndTree = SegmentTree.fromSequence(Seq(3, 2), IntegerAddition)
+    assert(!fstTree.equals(sndTree))
+    assert(!sndTree.equals(fstTree))
   }
 }
