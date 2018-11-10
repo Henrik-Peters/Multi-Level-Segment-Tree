@@ -94,4 +94,16 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
     assert(tree.modify(1)(1){10})
     tree.query(0, 1)(1, 2).get shouldEqual 21
   }
+
+  "modify for the two-dimensional tree with ints" should "not update other values" in {
+    tree.query(Range(0, 0))(Range(0, 0)).get shouldEqual 1
+    tree.query(Range(0, 0))(Range(1, 1)).get shouldEqual 2
+    tree.query(Range(0, 0))(Range(2, 2)).get shouldEqual 3
+    tree.query(Range(1, 1))(Range(0, 0)).get shouldEqual 4
+    tree.query(Range(1, 1))(Range(1, 1)).get shouldEqual 10
+    tree.query(Range(1, 1))(Range(2, 2)).get shouldEqual 6
+    tree.query(Range(2, 2))(Range(0, 0)).get shouldEqual 7
+    tree.query(Range(2, 2))(Range(1, 1)).get shouldEqual 8
+    tree.query(Range(2, 2))(Range(2, 2)).get shouldEqual 9
+  }
 }
