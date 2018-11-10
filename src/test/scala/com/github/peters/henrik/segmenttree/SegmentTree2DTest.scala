@@ -218,4 +218,118 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
     wTree.query(Range(1, 3))(Range(2, 2)) shouldEqual Option.empty
     wTree.query(Range(5, 7))(Range(8, 9)) shouldEqual Option.empty
   }
+
+  val heightMatrix = Seq(
+    Seq(7, 3, 1),
+    Seq(5, 2, 4),
+    Seq(1, 8, 6),
+    Seq(9, 5, 7)
+  )
+
+  val hTree: SegmentTree2D[Int] = SegmentTree2D.fromMatrix(heightMatrix, IntegerAddition)
+
+  "query for the height-two-dimensional tree for a single leaf value" should "be the leaf value" in {
+    hTree.query(Range(0, 0))(Range(0, 0)).get shouldEqual 7
+    hTree.query(Range(0, 0))(Range(1, 1)).get shouldEqual 3
+    hTree.query(Range(0, 0))(Range(2, 2)).get shouldEqual 1
+    hTree.query(Range(1, 1))(Range(0, 0)).get shouldEqual 5
+    hTree.query(Range(1, 1))(Range(1, 1)).get shouldEqual 2
+    hTree.query(Range(1, 1))(Range(2, 2)).get shouldEqual 4
+    hTree.query(Range(2, 2))(Range(0, 0)).get shouldEqual 1
+    hTree.query(Range(2, 2))(Range(1, 1)).get shouldEqual 8
+    hTree.query(Range(2, 2))(Range(2, 2)).get shouldEqual 6
+    hTree.query(Range(3, 3))(Range(0, 0)).get shouldEqual 9
+    hTree.query(Range(3, 3))(Range(1, 1)).get shouldEqual 5
+    hTree.query(Range(3, 3))(Range(2, 2)).get shouldEqual 7
+  }
+
+  "query for the height-two-dimensional tree with a complete row" should "be the folded value" in {
+    hTree.query(Range(0, 0))(Range(0, 2)).get shouldEqual 11
+    hTree.query(Range(1, 1))(Range(0, 2)).get shouldEqual 11
+    hTree.query(Range(2, 2))(Range(0, 2)).get shouldEqual 15
+    hTree.query(Range(3, 3))(Range(0, 2)).get shouldEqual 21
+  }
+
+  "query for the height-two-dimensional tree with a complete column" should "be the folded value" in {
+    hTree.query(Range(0, 3))(Range(0, 0)).get shouldEqual 22
+    hTree.query(Range(0, 3))(Range(1, 1)).get shouldEqual 18
+    hTree.query(Range(0, 3))(Range(2, 2)).get shouldEqual 18
+  }
+
+  "query for the height-two-dimensional tree with 3 elements in a column" should "be the folded value" in {
+    hTree.query(Range(0, 2))(Range(0, 0)).get shouldEqual 13
+    hTree.query(Range(1, 3))(Range(0, 0)).get shouldEqual 15
+    hTree.query(Range(0, 2))(Range(1, 1)).get shouldEqual 13
+    hTree.query(Range(1, 3))(Range(1, 1)).get shouldEqual 15
+    hTree.query(Range(0, 2))(Range(2, 2)).get shouldEqual 11
+    hTree.query(Range(1, 3))(Range(2, 2)).get shouldEqual 17
+  }
+
+  "query for the height-two-dimensional tree with 2 elements in a column" should "be the folded value" in {
+    hTree.query(Range(0, 1))(Range(0, 0)).get shouldEqual 12
+    hTree.query(Range(1, 2))(Range(0, 0)).get shouldEqual 6
+    hTree.query(Range(2, 3))(Range(0, 0)).get shouldEqual 10
+    hTree.query(Range(0, 1))(Range(1, 1)).get shouldEqual 5
+    hTree.query(Range(1, 2))(Range(1, 1)).get shouldEqual 10
+    hTree.query(Range(2, 3))(Range(1, 1)).get shouldEqual 13
+    hTree.query(Range(0, 1))(Range(2, 2)).get shouldEqual 5
+    hTree.query(Range(1, 2))(Range(2, 2)).get shouldEqual 10
+    hTree.query(Range(2, 3))(Range(2, 2)).get shouldEqual 13
+  }
+
+  "query for the height-two-dimensional tree with 2 elements in a row" should "be the folded value" in {
+    hTree.query(Range(0, 0))(Range(0, 1)).get shouldEqual 10
+    hTree.query(Range(0, 0))(Range(1, 2)).get shouldEqual 4
+    hTree.query(Range(1, 1))(Range(0, 1)).get shouldEqual 7
+    hTree.query(Range(1, 1))(Range(1, 2)).get shouldEqual 6
+    hTree.query(Range(2, 2))(Range(0, 1)).get shouldEqual 9
+    hTree.query(Range(2, 2))(Range(1, 2)).get shouldEqual 14
+    hTree.query(Range(3, 3))(Range(0, 1)).get shouldEqual 14
+    hTree.query(Range(3, 3))(Range(1, 2)).get shouldEqual 12
+  }
+
+  "query for the height-two-dimensional tree with a 4 element box" should "be the folded value" in {
+    hTree.query(Range(0, 1))(Range(0, 1)).get shouldEqual 17
+    hTree.query(Range(0, 1))(Range(1, 2)).get shouldEqual 10
+    hTree.query(Range(1, 2))(Range(0, 1)).get shouldEqual 16
+    hTree.query(Range(1, 2))(Range(1, 2)).get shouldEqual 20
+    hTree.query(Range(2, 3))(Range(0, 1)).get shouldEqual 23
+    hTree.query(Range(2, 3))(Range(1, 2)).get shouldEqual 26
+  }
+
+  "query for the height-two-dimensional tree with a 3x2 element box" should "be the folded value" in {
+    hTree.query(Range(0, 1))(Range(0, 2)).get shouldEqual 22
+    hTree.query(Range(1, 2))(Range(0, 2)).get shouldEqual 26
+    hTree.query(Range(2, 3))(Range(0, 2)).get shouldEqual 36
+  }
+
+  "query for the height-two-dimensional tree with a 2x3 element box" should "be the folded value" in {
+    hTree.query(Range(0, 2))(Range(0, 1)).get shouldEqual 26
+    hTree.query(Range(0, 2))(Range(1, 2)).get shouldEqual 24
+    hTree.query(Range(1, 3))(Range(0, 1)).get shouldEqual 30
+    hTree.query(Range(1, 3))(Range(1, 2)).get shouldEqual 32
+  }
+
+  "query for the height-two-dimensional tree with a 3x3 element box" should "be the folded value" in {
+    hTree.query(Range(0, 2))(Range(0, 2)).get shouldEqual 37
+    hTree.query(Range(1, 3))(Range(0, 2)).get shouldEqual 47
+  }
+
+  "query for the height-two-dimensional tree with the complete range" should "be the folded value" in {
+    hTree.query(Range(0, 3))(Range(0, 2)).get shouldEqual 58
+  }
+
+  "query for the height-two-dimensional tree with an invalid range" should "be empty" in {
+    hTree.query(Range(0, 0))(Range(-1, 1)) shouldEqual Option.empty
+    hTree.query(Range(1, 1))(Range(-1, 1)) shouldEqual Option.empty
+    hTree.query(Range(2, 2))(Range(-1, 1)) shouldEqual Option.empty
+    hTree.query(Range(3, 3))(Range(-1, 1)) shouldEqual Option.empty
+    hTree.query(Range(0, 0))(Range(2, 3)) shouldEqual Option.empty
+    hTree.query(Range(1, 1))(Range(2, 3)) shouldEqual Option.empty
+    hTree.query(Range(2, 2))(Range(2, 3)) shouldEqual Option.empty
+    hTree.query(Range(3, 3))(Range(2, 3)) shouldEqual Option.empty
+    hTree.query(Range(-1, 1))(Range(0, 0)) shouldEqual Option.empty
+    hTree.query(Range(3, 4))(Range(0, 0)) shouldEqual Option.empty
+    hTree.query(Range(7, 8))(Range(5, 7)) shouldEqual Option.empty
+  }
 }
