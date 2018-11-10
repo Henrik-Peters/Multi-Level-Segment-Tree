@@ -106,4 +106,116 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
     tree.query(Range(2, 2))(Range(1, 1)).get shouldEqual 8
     tree.query(Range(2, 2))(Range(2, 2)).get shouldEqual 9
   }
+
+  val widthMatrix = Seq(
+    Seq(5, 7, 3, 2),
+    Seq(1, 9, 4, 6),
+    Seq(8, 2, 5, 4)
+  )
+
+  val wTree: SegmentTree2D[Int] = SegmentTree2D.fromMatrix(widthMatrix, IntegerAddition)
+
+  "query for the width-two-dimensional tree for a single leaf value" should "be the leaf value" in {
+    wTree.query(Range(0, 0))(Range(0, 0)).get shouldEqual 5
+    wTree.query(Range(0, 0))(Range(1, 1)).get shouldEqual 7
+    wTree.query(Range(0, 0))(Range(2, 2)).get shouldEqual 3
+    wTree.query(Range(0, 0))(Range(3, 3)).get shouldEqual 2
+    wTree.query(Range(1, 1))(Range(0, 0)).get shouldEqual 1
+    wTree.query(Range(1, 1))(Range(1, 1)).get shouldEqual 9
+    wTree.query(Range(1, 1))(Range(2, 2)).get shouldEqual 4
+    wTree.query(Range(1, 1))(Range(3, 3)).get shouldEqual 6
+    wTree.query(Range(2, 2))(Range(0, 0)).get shouldEqual 8
+    wTree.query(Range(2, 2))(Range(1, 1)).get shouldEqual 2
+    wTree.query(Range(2, 2))(Range(2, 2)).get shouldEqual 5
+    wTree.query(Range(2, 2))(Range(3, 3)).get shouldEqual 4
+  }
+
+  "query for the width-two-dimensional tree with a complete row" should "be the folded value" in {
+    wTree.query(Range(0, 0))(Range(0, 3)).get shouldEqual 17
+    wTree.query(Range(1, 1))(Range(0, 3)).get shouldEqual 20
+    wTree.query(Range(2, 2))(Range(0, 3)).get shouldEqual 19
+  }
+
+  "query for the width-two-dimensional tree with a complete column" should "be the folded value" in {
+    wTree.query(Range(0, 2))(Range(0, 0)).get shouldEqual 14
+    wTree.query(Range(0, 2))(Range(1, 1)).get shouldEqual 18
+    wTree.query(Range(0, 2))(Range(2, 2)).get shouldEqual 12
+    wTree.query(Range(0, 2))(Range(3, 3)).get shouldEqual 12
+  }
+
+  "query for the width-two-dimensional tree with 3 elements in a row" should "be the folded value" in {
+    wTree.query(Range(0, 0))(Range(0, 2)).get shouldEqual 15
+    wTree.query(Range(0, 0))(Range(1, 3)).get shouldEqual 12
+    wTree.query(Range(1, 1))(Range(0, 2)).get shouldEqual 14
+    wTree.query(Range(1, 1))(Range(1, 3)).get shouldEqual 19
+    wTree.query(Range(2, 2))(Range(0, 2)).get shouldEqual 15
+    wTree.query(Range(2, 2))(Range(1, 3)).get shouldEqual 11
+  }
+
+  "query for the width-two-dimensional tree with 2 elements in a row" should "be the folded value" in {
+    wTree.query(Range(0, 0))(Range(0, 1)).get shouldEqual 12
+    wTree.query(Range(0, 0))(Range(1, 2)).get shouldEqual 10
+    wTree.query(Range(0, 0))(Range(2, 3)).get shouldEqual 5
+    wTree.query(Range(1, 1))(Range(0, 1)).get shouldEqual 10
+    wTree.query(Range(1, 1))(Range(1, 2)).get shouldEqual 13
+    wTree.query(Range(1, 1))(Range(2, 3)).get shouldEqual 10
+    wTree.query(Range(2, 2))(Range(0, 1)).get shouldEqual 10
+    wTree.query(Range(2, 2))(Range(1, 2)).get shouldEqual 7
+    wTree.query(Range(2, 2))(Range(2, 3)).get shouldEqual 9
+  }
+
+  "query for the width-two-dimensional tree with 2 elements in a column" should "be the folded value" in {
+    wTree.query(Range(0, 1))(Range(0, 0)).get shouldEqual 6
+    wTree.query(Range(1, 2))(Range(0, 0)).get shouldEqual 9
+    wTree.query(Range(0, 1))(Range(1, 1)).get shouldEqual 16
+    wTree.query(Range(1, 2))(Range(1, 1)).get shouldEqual 11
+    wTree.query(Range(0, 1))(Range(2, 2)).get shouldEqual 7
+    wTree.query(Range(1, 2))(Range(2, 2)).get shouldEqual 9
+    wTree.query(Range(0, 1))(Range(3, 3)).get shouldEqual 8
+    wTree.query(Range(1, 2))(Range(3, 3)).get shouldEqual 10
+  }
+
+  "query for the width-two-dimensional tree with a 4 element box" should "be the folded value" in {
+    wTree.query(Range(0, 1))(Range(0, 1)).get shouldEqual 22
+    wTree.query(Range(0, 1))(Range(1, 2)).get shouldEqual 23
+    wTree.query(Range(0, 1))(Range(2, 3)).get shouldEqual 15
+    wTree.query(Range(1, 2))(Range(0, 1)).get shouldEqual 20
+    wTree.query(Range(1, 2))(Range(1, 2)).get shouldEqual 20
+    wTree.query(Range(1, 2))(Range(2, 3)).get shouldEqual 19
+  }
+
+  "query for the width-two-dimensional tree with a 3x2 element box" should "be the folded value" in {
+    wTree.query(Range(0, 1))(Range(0, 2)).get shouldEqual 29
+    wTree.query(Range(0, 1))(Range(1, 3)).get shouldEqual 31
+    wTree.query(Range(1, 2))(Range(0, 2)).get shouldEqual 29
+    wTree.query(Range(1, 2))(Range(1, 3)).get shouldEqual 30
+  }
+
+  "query for the width-two-dimensional tree with a 2x3 element box" should "be the folded value" in {
+    wTree.query(Range(0, 2))(Range(0, 1)).get shouldEqual 32
+    wTree.query(Range(0, 2))(Range(1, 2)).get shouldEqual 30
+    wTree.query(Range(0, 2))(Range(2, 3)).get shouldEqual 24
+  }
+
+  "query for the width-two-dimensional tree with a 3x3 element box" should "be the folded value" in {
+    wTree.query(Range(0, 2))(Range(0, 2)).get shouldEqual 44
+    wTree.query(Range(0, 2))(Range(1, 3)).get shouldEqual 42
+  }
+
+  "query for the width-two-dimensional tree with the complete range" should "be the folded value" in {
+    wTree.query(Range(0, 2))(Range(0, 3)).get shouldEqual 56
+  }
+
+  "query for the width-two-dimensional tree with an invalid range" should "be empty" in {
+    wTree.query(Range(0, 0))(Range(-1, 1)) shouldEqual Option.empty
+    wTree.query(Range(1, 1))(Range(-1, 1)) shouldEqual Option.empty
+    wTree.query(Range(2, 2))(Range(-1, 1)) shouldEqual Option.empty
+    wTree.query(Range(0, 0))(Range(2, 4)) shouldEqual Option.empty
+    wTree.query(Range(1, 1))(Range(2, 4)) shouldEqual Option.empty
+    wTree.query(Range(2, 2))(Range(2, 4)) shouldEqual Option.empty
+    wTree.query(Range(1, 3))(Range(0, 0)) shouldEqual Option.empty
+    wTree.query(Range(1, 3))(Range(1, 1)) shouldEqual Option.empty
+    wTree.query(Range(1, 3))(Range(2, 2)) shouldEqual Option.empty
+    wTree.query(Range(5, 7))(Range(8, 9)) shouldEqual Option.empty
+  }
 }
