@@ -6,6 +6,7 @@
 package com.github.peters.henrik.segmenttree
 
 import org.scalatest.{FlatSpec, Matchers}
+import Range._
 
 class RangeTest extends FlatSpec with Matchers {
 
@@ -204,5 +205,87 @@ class RangeTest extends FlatSpec with Matchers {
     val rangeB = Range(10, 16)
     rangeA.disjoint(rangeB) should be (false)
     rangeB.disjoint(rangeA) should be (false)
+  }
+
+  "A Range" should "have itself as subrange" in {
+    val range0 = Range(0, 0)
+    subranges(range0) shouldEqual List(Range(0, 0))
+
+    val range1 = Range(1, 1)
+    subranges(range1) shouldEqual List(Range(1, 1))
+
+    val range2 = Range(2, 2)
+    subranges(range2) shouldEqual List(Range(2, 2))
+
+    val range3 = Range(3, 3)
+    subranges(range3) shouldEqual List(Range(3, 3))
+  }
+
+  "A Range" should "have 1 element ranges as subrange" in {
+    val range0 = Range(0, 1)
+    subranges(range0) shouldEqual List(Range(0,0), Range(1,1), Range(0,1))
+
+    val range1 = Range(2, 3)
+    subranges(range1) shouldEqual List(Range(2,2), Range(3,3), Range(2,3))
+  }
+
+  "A Range" should "have 1 element step ranges as subrange" in {
+    val range0 = Range(0, 2)
+    subranges(range0) shouldEqual
+      List(
+        Range(0,0), Range(1,1), Range(2,2),
+        Range(0,1), Range(1,2),
+        Range(0,2)
+      )
+
+    val range1 = Range(5, 7)
+    subranges(range1) shouldEqual
+      List(
+        Range(5,5), Range(6,6), Range(7,7),
+        Range(5,6), Range(6,7),
+        Range(5,7)
+      )
+  }
+
+  "A Range" should "have 2 element step ranges as subrange" in {
+    val range0 = Range(0, 3)
+    subranges(range0) shouldEqual
+      List(
+        Range(0,0), Range(1,1), Range(2,2), Range(3,3),
+        Range(0,1), Range(1,2), Range(2,3),
+        Range(0,2), Range(1,3),
+        Range(0,3)
+      )
+
+    val range1 = Range(5, 8)
+    subranges(range1) shouldEqual
+      List(
+        Range(5,5), Range(6,6), Range(7,7), Range(8,8),
+        Range(5,6), Range(6,7), Range(7,8),
+        Range(5,7), Range(6,8),
+        Range(5,8)
+      )
+  }
+
+  "A Range" should "have 3 element step ranges as subrange" in {
+    val range0 = Range(0, 4)
+    subranges(range0) shouldEqual
+      List(
+        Range(0,0), Range(1,1), Range(2,2), Range(3,3), Range(4,4),
+        Range(0,1), Range(1,2), Range(2,3), Range(3,4),
+        Range(0,2), Range(1,3), Range(2,4),
+        Range(0,3), Range(1,4),
+        Range(0,4)
+      )
+
+    val range1 = Range(5, 9)
+    subranges(range1) shouldEqual
+      List(
+        Range(5,5), Range(6,6), Range(7,7), Range(8,8), Range(9,9),
+        Range(5,6), Range(6,7), Range(7,8), Range(8,9),
+        Range(5,7), Range(6,8), Range(7,9),
+        Range(5,8), Range(6,9),
+        Range(5,9)
+      )
   }
 }
