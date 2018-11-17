@@ -34,3 +34,17 @@ case class Range(start: Int, end: Int) {
     (end < other.start) || (start > other.end)
   }
 }
+
+object Range {
+  val subranges: Range => List[Range] = range => {
+    var subRanges: List[Range] = List()
+
+    for (rangeLength <- 0 to range.end - range.start) {
+      for (start <- range.start to (range.end - rangeLength)) {
+        subRanges = Range(start, start + rangeLength) :: subRanges
+      }
+    }
+
+    subRanges.reverse
+  }
+}
