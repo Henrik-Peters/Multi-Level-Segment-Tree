@@ -6,11 +6,24 @@
 package com.github.peters.henrik.segmenttree
 
 /**
-  * @author Henrik Peters
+  * Example usage for the segment tree to create substrings in logarithmic time.
+  * All possible substrings of hello world will be queried from the segment tree.
   */
 object App {
+  def main(args: Array[String]): Unit = {
 
-  def main(args : Array[String]) {
-    println("Multi-Level Segment Tree")
+    object StringConcatenation extends Monoid[String] {
+      def fold(a: String, b: String): String = a concat b
+      def identity: String = ""
+    }
+
+    val hello = "Hello World!".toCharArray map {_.toString}
+    val range = Range(0, hello.length - 1)
+    val subranges = Range.subranges(range)
+    val tree = SegmentTree.fromSequence(hello, StringConcatenation)
+
+    println(s"All substrings of ${hello.mkString} from the segment tree:")
+
+    subranges flatMap {range => tree.query(range)} foreach println
   }
 }
