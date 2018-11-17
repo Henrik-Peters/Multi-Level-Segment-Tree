@@ -47,3 +47,59 @@ Additionally a jar with dependencies is created. To use this project as a depend
 ```bash
 mvn clean install
 ```
+
+## Visualization
+The data structure can be visualized with the dump function. The dump will generate a graph
+and png file with the `Graphviz`-Tool. The dump function is only available for one-dimensional
+trees. For example:
+
+Sum of integers  | Substrings
+:---------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------:
+![Sumtree-Example](https://raw.githubusercontent.com/wiki/Henrik-Peters/Multi-Level-Segment-Tree/images/sumtree-example.png) | ![Substringtree-Example](https://raw.githubusercontent.com/wiki/Henrik-Peters/Multi-Level-Segment-Tree/images/substringtree-example.png)
+
+## Parameterizing trees with monoids
+To construct a new segment tree you also have to specify a monoid for the new tree.
+This makes the implementation more general because it can be adopted for different use cases.
+There are many monoids and basically each monoid is used for a different use case. Just to give
+a few examples of monoids and their use cases with segment trees:
+
+**Query:** Sum of integers in the given range
+```scala
+object IntegerAddition extends Monoid[Int] {
+  def fold(a: Int, b: Int): Int = a + b
+  def identity: Int = 0
+}
+```
+
+**Query:** Substring of the given range
+```scala
+object StringConcatenation extends Monoid[String] {
+  def fold(a: String, b: String): String = a concat b
+  def identity: String = ""
+}
+```
+
+**Query:** Biggest integer in the given range
+```scala
+object IntegerMax extends Monoid[Int] {
+  def fold(a: Int, b: Int): Int = a max b
+  def identity: Int = Integer.MIN_VALUE
+}
+```
+
+**Query:** Slice of the given range
+```scala
+object ListConcat extends Monoid[List[_]] {
+  def fold(a: List[_], b: List[_]): List[_] = a ::: b
+  def identity: List[_] = List.empty
+}
+```
+
+## Extending segment trees to higher dimensions
+Segment trees can contain any type. This type can also be a segment tree, in theory this
+recursion is already the construction of a multi-dimensional tree. The monoid for the outer
+tree has to fold segment trees. But this monoid can be constructed automatically from the inner
+monoid, by folding a tree element-wise. It still makes sense to provide different types for
+multi-dimensional trees to achieve more type safety and better readability. There is some kind
+of code duplication for the different dimensions, but abstracting the logic just for n dimensions
+is not very type safe and can be confusing for lower dimensions.
