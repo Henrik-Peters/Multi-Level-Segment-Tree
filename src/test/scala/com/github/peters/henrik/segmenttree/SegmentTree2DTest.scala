@@ -332,4 +332,11 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
     hTree.query(Range(3, 4))(Range(0, 0)) shouldEqual Option.empty
     hTree.query(Range(7, 8))(Range(5, 7)) shouldEqual Option.empty
   }
+
+  "Equals for two identical leafs" should "be true" in {
+    val fstTree = SegmentTree2D.fromMatrix(Seq(Seq(1)), IntegerAddition)
+    val sndTree = SegmentTree2D.fromMatrix(Seq(Seq(1)), IntegerAddition)
+    assert(fstTree.equals(sndTree))
+    assert(sndTree.equals(fstTree))
+  }
 }
