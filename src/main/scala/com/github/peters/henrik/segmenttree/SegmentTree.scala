@@ -107,11 +107,11 @@ class SegmentTree[T](private val root: TreeNode[T], val monoid: Monoid[T]) {
 
   private def queryNode(range: Range, node: TreeNode[T]): T = {
     node match {
-      case Node(subRange, value, leftChild, rightChild) =>
-        if (range.contains(subRange)) {
+      case Node(nodeRange, value, leftChild, rightChild) =>
+        if (range.contains(nodeRange)) {
           value
 
-        } else if (range.disjoint(subRange)) {
+        } else if (range.disjoint(nodeRange)) {
           monoid.identity
 
         } else {
@@ -121,11 +121,8 @@ class SegmentTree[T](private val root: TreeNode[T], val monoid: Monoid[T]) {
         }
 
       case Leaf(index, value) =>
-        if (range.contains(index)) {
-          value
-        } else {
-          monoid.identity
-        }
+        if (range.contains(index)) value
+        else monoid.identity
     }
   }
 
@@ -168,7 +165,7 @@ class SegmentTree[T](private val root: TreeNode[T], val monoid: Monoid[T]) {
         val invLeftSegment = left match {
           case Node(leftSegment, _, _, _) =>
             leftSegment.start == segment.start &&
-              leftSegment.end == mid(segment.start, segment.end)
+            leftSegment.end == mid(segment.start, segment.end)
 
           case Leaf(index, _) =>
             segment.start == index
@@ -177,7 +174,7 @@ class SegmentTree[T](private val root: TreeNode[T], val monoid: Monoid[T]) {
         val invRightSegment = right match {
           case Node(rightSegment, _, _, _) =>
             rightSegment.start == mid(segment.start, segment.end) + 1 &&
-              rightSegment.end == segment.end
+            rightSegment.end == segment.end
 
           case Leaf(index, _) =>
             segment.end == index
@@ -186,8 +183,7 @@ class SegmentTree[T](private val root: TreeNode[T], val monoid: Monoid[T]) {
         invFold && invLeftSegment && invRightSegment &&
         invariant(left) && invariant(right)
 
-      case Leaf(_, _) =>
-        true
+      case Leaf(_, _) => true
     }
   }
 
@@ -199,11 +195,11 @@ class SegmentTree[T](private val root: TreeNode[T], val monoid: Monoid[T]) {
 
     //Add all nodes to a list ordered by the depth and then by key
     class DumpMetaData(val key: Int, val depth: Int)
-    var nodeList : List[(DumpMetaData,TreeNode[T])] = List()
+    var nodeList: List[(DumpMetaData,TreeNode[T])] = List()
 
     object KeyGenerator {
-      var key : Int = 0
-      def getNextKey : Int = {key += 1; key}
+      var key: Int = 0
+      def getNextKey: Int = {key += 1; key}
     }
 
     def addToNodeList(node: TreeNode[T], depth: Int = 0): Unit = {
