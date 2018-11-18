@@ -14,6 +14,11 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
     def identity: Int = 0
   }
 
+  object IntegerMultiplication extends Monoid[Int] {
+    def fold(a: Int, b: Int): Int = a * b
+    def identity: Int = 1
+  }
+
   val simpleMatrix = Seq(
     Seq(1, 2, 3),
     Seq(4, 5, 6),
@@ -338,5 +343,82 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
     val sndTree = SegmentTree2D.fromMatrix(Seq(Seq(1)), IntegerAddition)
     assert(fstTree.equals(sndTree))
     assert(sndTree.equals(fstTree))
+  }
+
+  "Equals for two identical leafs with different monoids" should "be false" in {
+    val fstTree = SegmentTree2D.fromMatrix(Seq(Seq(1)), IntegerAddition)
+    val sndTree = SegmentTree2D.fromMatrix(Seq(Seq(1)), IntegerMultiplication)
+    assert(!fstTree.equals(sndTree))
+    assert(!sndTree.equals(fstTree))
+  }
+
+  "Equals for two different leafs" should "be false" in {
+    val fstTree = SegmentTree2D.fromMatrix(Seq(Seq(1)), IntegerAddition)
+    val sndTree = SegmentTree2D.fromMatrix(Seq(Seq(2)), IntegerAddition)
+    assert(!fstTree.equals(sndTree))
+    assert(!sndTree.equals(fstTree))
+  }
+
+  "Equals for two identical trees with 2 elements" should "be true" in {
+    val fstTree = SegmentTree2D.fromMatrix(Seq(Seq(1, 2)), IntegerAddition)
+    val sndTree = SegmentTree2D.fromMatrix(Seq(Seq(1, 2)), IntegerAddition)
+    assert(fstTree.equals(sndTree))
+    assert(sndTree.equals(fstTree))
+  }
+
+  "Equals for two identical trees with 3 elements" should "be true" in {
+    val fstTree = SegmentTree2D.fromMatrix(Seq(Seq(1, 2, 3)), IntegerAddition)
+    val sndTree = SegmentTree2D.fromMatrix(Seq(Seq(1, 2, 3)), IntegerAddition)
+    assert(fstTree.equals(sndTree))
+    assert(sndTree.equals(fstTree))
+  }
+
+  "Equals for two different trees with 3 elements" should "be false" in {
+    val fstTree = SegmentTree2D.fromMatrix(Seq(Seq(1, 2, 3)), IntegerAddition)
+    val sndTree = SegmentTree2D.fromMatrix(Seq(Seq(1, 7, 3)), IntegerAddition)
+    assert(!fstTree.equals(sndTree))
+    assert(!sndTree.equals(fstTree))
+  }
+
+  "Equals for two identical trees with 2 sequences" should "be true" in {
+    val fstTree = SegmentTree2D.fromMatrix(Seq(Seq(1), Seq(2)), IntegerAddition)
+    val sndTree = SegmentTree2D.fromMatrix(Seq(Seq(1), Seq(2)), IntegerAddition)
+    assert(fstTree.equals(sndTree))
+    assert(sndTree.equals(fstTree))
+  }
+
+  "Equals for two different trees with 2 sequences" should "be false" in {
+    val fstTree = SegmentTree2D.fromMatrix(Seq(Seq(1), Seq(2)), IntegerAddition)
+    val sndTree = SegmentTree2D.fromMatrix(Seq(Seq(4), Seq(2)), IntegerAddition)
+    assert(!fstTree.equals(sndTree))
+    assert(!sndTree.equals(fstTree))
+  }
+
+  "Equals for two identical trees with 3 sequences" should "be true" in {
+    val fstTree = SegmentTree2D.fromMatrix(Seq(Seq(1), Seq(2), Seq(3)), IntegerAddition)
+    val sndTree = SegmentTree2D.fromMatrix(Seq(Seq(1), Seq(2), Seq(3)), IntegerAddition)
+    assert(fstTree.equals(sndTree))
+    assert(sndTree.equals(fstTree))
+  }
+
+  "Equals for two different trees with 3 sequences" should "be true" in {
+    val fstTree = SegmentTree2D.fromMatrix(Seq(Seq(1), Seq(2), Seq(3)), IntegerAddition)
+    val sndTree = SegmentTree2D.fromMatrix(Seq(Seq(1), Seq(2), Seq(5)), IntegerAddition)
+    assert(!fstTree.equals(sndTree))
+    assert(!sndTree.equals(fstTree))
+  }
+
+  "Equals for two identical trees with 3 sequences and multiple elements" should "be true" in {
+    val fstTree = SegmentTree2D.fromMatrix(Seq(Seq(1, 2, 3), Seq(4, 5, 6), Seq(7, 8, 9)), IntegerAddition)
+    val sndTree = SegmentTree2D.fromMatrix(Seq(Seq(1, 2, 3), Seq(4, 5, 6), Seq(7, 8, 9)), IntegerAddition)
+    assert(fstTree.equals(sndTree))
+    assert(sndTree.equals(fstTree))
+  }
+
+  "Equals for two different trees with a different sequence amount" should "be true" in {
+    val fstTree = SegmentTree2D.fromMatrix(Seq(Seq(1, 2), Seq(3, 4), Seq(5, 6)), IntegerAddition)
+    val sndTree = SegmentTree2D.fromMatrix(Seq(Seq(1, 2), Seq(3, 4)), IntegerAddition)
+    assert(!fstTree.equals(sndTree))
+    assert(!sndTree.equals(fstTree))
   }
 }
