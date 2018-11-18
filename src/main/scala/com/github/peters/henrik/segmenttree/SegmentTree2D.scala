@@ -81,4 +81,14 @@ class SegmentTree2D[T](private val root: TreeNode[SegmentTree[T]], val monoid: M
       case None => false
     }
   }
+
+  override def equals(obj: Any): Boolean = {
+    obj match {
+      case other: SegmentTree2D[T] =>
+        tree.equals(other.tree) &&
+        monoid.equals(other.monoid)
+
+      case _ => false
+    }
+  }
 }
