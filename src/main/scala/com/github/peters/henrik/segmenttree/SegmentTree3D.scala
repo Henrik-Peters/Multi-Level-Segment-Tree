@@ -60,4 +60,14 @@ class SegmentTree3D[T](
       case None => false
     }
   }
+
+  override def equals(obj: Any): Boolean = {
+    obj match {
+      case other: SegmentTree3D[T] =>
+        tree.equals(other.tree) &&
+        monoid.equals(other.monoid)
+
+      case _ => false
+    }
+  }
 }
