@@ -34,7 +34,11 @@ object SegmentTree2D {
   * @param treeMonoid Used to fold the segment trees
   * @tparam T Type of the final elements stored in the tree
   */
-class SegmentTree2D[T](private val root: TreeNode[SegmentTree[T]], val monoid: Monoid[T], val treeMonoid: Monoid[SegmentTree[T]]) {
+class SegmentTree2D[T](
+  private val root: TreeNode[SegmentTree[T]],
+  val monoid: Monoid[T],
+  val treeMonoid: Monoid[SegmentTree[T]]) {
+
   import SegmentTree2D._
   type SegTree2D = SegmentTree[SegmentTree[T]]
 
