@@ -35,7 +35,6 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
         tree.query(yRange)(xRange).get shouldEqual tree.query(y, y)(x, x).get
       }
     }
-
   }
 
   "query for the two-dimensional tree with ints" should "be the folded value" in {
@@ -420,5 +419,34 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
     val sndTree = SegmentTree2D.fromMatrix(Seq(Seq(1, 2), Seq(3, 4)), IntegerAddition)
     assert(!fstTree.equals(sndTree))
     assert(!sndTree.equals(fstTree))
+  }
+
+  class LoopQuery2D(matrix: Seq[Seq[Int]], monoid: Monoid[Int]){
+    val array: Array[Array[Int]] = matrix.toArray.map(_.toArray)
+
+    def query(yRange: Range)(xRange: Range): Option[Int] = {
+      try {
+        var accumulator = monoid.identity
+
+        for (y <- yRange.start to yRange.end) {
+          for (x <- xRange.start to xRange.end) {
+            accumulator = monoid.fold(accumulator, array(y)(x))
+          }
+        }
+
+        Some(accumulator)
+      } catch {
+        case _: Throwable => None
+      }
+    }
+
+    def modify(y: Int)(x: Int)(newValue: Int): Boolean = {
+      try {
+        array(y)(x) = newValue
+        true
+      } catch {
+        case _: Throwable => false
+      }
+    }
   }
 }
