@@ -6,6 +6,7 @@
 package com.github.peters.henrik.segmenttree
 
 import Range._
+import scala.util.Random
 import org.scalatest.{FlatSpec, Matchers}
 
 class SegmentTree2DTest extends FlatSpec with Matchers {
@@ -502,30 +503,60 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
     leftOf ::: rightOf ::: yInvalids ::: xInvalids ::: yTooBig ::: xTooBig
   }
 
+  val generate2DSingleElementRanges: Seq[Seq[Int]] => List[(Int,Int)] = matrix => {
+    val yElements = matrix.indices.toList
+    val xElements = matrix.head.indices.toList
+
+    for {
+      y <- yElements
+      x <- xElements
+    } yield (y, x)
+  }
+
   val test: Seq[Seq[Int]] => Unit = matrix => {
     val loopQuery = new LoopQuery2D(matrix, IntegerAddition)
     val tree: SegmentTree2D[Int] = SegmentTree2D.fromMatrix(matrix, IntegerAddition)
 
     val valids = generate2DSubranges(matrix)
     val invalids = generate2DInvalidSubranges(matrix)
+    val elements = generate2DSingleElementRanges(matrix)
 
-    valids.foreach(pair => {
-      val treeResult = tree.query(pair._1)(pair._2)
-      val loopResult = loopQuery.query(pair._1)(pair._2)
+    def testQueries(): Unit = {
+      valids.foreach(pair => {
+        val treeResult = tree.query(pair._1)(pair._2)
+        val loopResult = loopQuery.query(pair._1)(pair._2)
 
-      treeResult shouldEqual loopResult
-      treeResult should not equal Option.empty
-      loopResult should not equal Option.empty
-    })
+        treeResult shouldEqual loopResult
+        treeResult should not equal Option.empty
+        loopResult should not equal Option.empty
+      })
 
-    invalids.foreach(pair => {
-      val treeResult = tree.query(pair._1)(pair._2)
-      val loopResult = loopQuery.query(pair._1)(pair._2)
+      invalids.foreach(pair => {
+        val treeResult = tree.query(pair._1)(pair._2)
+        val loopResult = loopQuery.query(pair._1)(pair._2)
 
-      treeResult shouldEqual loopResult
-      treeResult shouldEqual Option.empty
-      loopResult shouldEqual Option.empty
-    })
+        treeResult shouldEqual loopResult
+        treeResult shouldEqual Option.empty
+        loopResult shouldEqual Option.empty
+      })
+    }
+
+    testQueries()
+    val modifyCycles = 3
+    val random = new Random(matrix.head.head)
+
+    for (_ <- 0 until modifyCycles) {
+      elements.foreach(elem => {
+        val newValue = random.nextInt(300)
+        val treeModify = tree.modify(elem._1)(elem._2)(newValue)
+        val loopModify = loopQuery.modify(elem._1)(elem._2)(newValue)
+
+        treeModify shouldEqual loopModify
+        treeModify shouldEqual true
+        loopModify shouldEqual true
+        testQueries()
+      })
+    }
   }
 
   "The loop range implementation" should "match with the tree implementation" in {
@@ -533,6 +564,46 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
       Seq(1, 2, 3),
       Seq(4, 5, 6),
       Seq(7, 8, 9)
+    )}
+
+    test{Seq(
+      Seq(1, 2),
+      Seq(3, 4)
+    )}
+
+    test{Seq(
+      Seq(5, 1, 9),
+      Seq(3, 1, 4),
+      Seq(7, 1, 3)
+    )}
+
+    test{Seq(
+      Seq(9, 3, 1, 7),
+      Seq(3, 4, 5, 8)
+    )}
+
+    test{Seq(
+      Seq(1, 5, 3),
+      Seq(8, 1, 7),
+      Seq(5, 7, 6),
+      Seq(1, 3, 2),
+      Seq(8, 5, 3),
+      Seq(9, 6, 4)
+    )}
+
+    test{Seq(
+      Seq(1, 4, 8, 3, 2, 7, 9),
+      Seq(9, 3, 1, 4, 1, 8, 3),
+      Seq(7, 8, 1, 9, 3, 2, 4)
+    )}
+
+    test{Seq(
+      Seq(1, 0, 0, 0, 0, 0),
+      Seq(0, 1, 0, 0, 0, 0),
+      Seq(0, 0, 1, 0, 0, 0),
+      Seq(0, 0, 0, 1, 0, 0),
+      Seq(0, 0, 0, 0, 1, 0),
+      Seq(0, 0, 0, 0, 0, 1)
     )}
   }
 }
