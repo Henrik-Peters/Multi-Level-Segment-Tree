@@ -42,4 +42,22 @@ class SegmentTree3D[T](
       case None => None
     }
   }
+
+  def modify(z: Int)(y: Int)(x: Int)(newValue: T): Boolean = {
+    tree.query(z, z) match {
+      case Some(subTree) =>
+        var subTreeModified = false
+
+        subTree.query(y, y) match {
+          case Some(leaf) =>
+            subTreeModified = leaf.modify(x, newValue) && subTree.modify(y, leaf)
+
+          case None => return false
+        }
+
+        subTreeModified && tree.modify(z, subTree)
+
+      case None => false
+    }
+  }
 }

@@ -84,4 +84,100 @@ class SegmentTree3DTest extends FlatSpec with Matchers {
     tree.query(Range(0, 1))(Range(0, 1))(Range(0, 0)).get shouldEqual 16
     tree.query(Range(0, 1))(Range(0, 1))(Range(1, 1)).get shouldEqual 20
   }
+
+  "modify for the element 1" should "update the leaf value" in {
+    assert(tree.modify(0)(0)(0)(100))
+    tree.query(Range(0, 0))(Range(0, 0))(Range(0, 0)).get shouldEqual 100
+    tree.query(Range(0, 0))(Range(0, 0))(Range(1, 1)).get shouldEqual 2
+    tree.query(Range(0, 0))(Range(1, 1))(Range(0, 0)).get shouldEqual 3
+    tree.query(Range(0, 0))(Range(1, 1))(Range(1, 1)).get shouldEqual 4
+    tree.query(Range(1, 1))(Range(0, 0))(Range(0, 0)).get shouldEqual 5
+    tree.query(Range(1, 1))(Range(0, 0))(Range(1, 1)).get shouldEqual 6
+    tree.query(Range(1, 1))(Range(1, 1))(Range(0, 0)).get shouldEqual 7
+    tree.query(Range(1, 1))(Range(1, 1))(Range(1, 1)).get shouldEqual 8
+  }
+
+  "modify for the element 2" should "update the leaf value" in {
+    assert(tree.modify(0)(0)(1)(200))
+    tree.query(Range(0, 0))(Range(0, 0))(Range(0, 0)).get shouldEqual 100
+    tree.query(Range(0, 0))(Range(0, 0))(Range(1, 1)).get shouldEqual 200
+    tree.query(Range(0, 0))(Range(1, 1))(Range(0, 0)).get shouldEqual 3
+    tree.query(Range(0, 0))(Range(1, 1))(Range(1, 1)).get shouldEqual 4
+    tree.query(Range(1, 1))(Range(0, 0))(Range(0, 0)).get shouldEqual 5
+    tree.query(Range(1, 1))(Range(0, 0))(Range(1, 1)).get shouldEqual 6
+    tree.query(Range(1, 1))(Range(1, 1))(Range(0, 0)).get shouldEqual 7
+    tree.query(Range(1, 1))(Range(1, 1))(Range(1, 1)).get shouldEqual 8
+  }
+
+  "modify for the element 3" should "update the leaf value" in {
+    assert(tree.modify(0)(1)(0)(300))
+    tree.query(Range(0, 0))(Range(0, 0))(Range(0, 0)).get shouldEqual 100
+    tree.query(Range(0, 0))(Range(0, 0))(Range(1, 1)).get shouldEqual 200
+    tree.query(Range(0, 0))(Range(1, 1))(Range(0, 0)).get shouldEqual 300
+    tree.query(Range(0, 0))(Range(1, 1))(Range(1, 1)).get shouldEqual 4
+    tree.query(Range(1, 1))(Range(0, 0))(Range(0, 0)).get shouldEqual 5
+    tree.query(Range(1, 1))(Range(0, 0))(Range(1, 1)).get shouldEqual 6
+    tree.query(Range(1, 1))(Range(1, 1))(Range(0, 0)).get shouldEqual 7
+    tree.query(Range(1, 1))(Range(1, 1))(Range(1, 1)).get shouldEqual 8
+  }
+
+  "modify for the element 4" should "update the leaf value" in {
+    assert(tree.modify(0)(1)(1)(400))
+    tree.query(Range(0, 0))(Range(0, 0))(Range(0, 0)).get shouldEqual 100
+    tree.query(Range(0, 0))(Range(0, 0))(Range(1, 1)).get shouldEqual 200
+    tree.query(Range(0, 0))(Range(1, 1))(Range(0, 0)).get shouldEqual 300
+    tree.query(Range(0, 0))(Range(1, 1))(Range(1, 1)).get shouldEqual 400
+    tree.query(Range(1, 1))(Range(0, 0))(Range(0, 0)).get shouldEqual 5
+    tree.query(Range(1, 1))(Range(0, 0))(Range(1, 1)).get shouldEqual 6
+    tree.query(Range(1, 1))(Range(1, 1))(Range(0, 0)).get shouldEqual 7
+    tree.query(Range(1, 1))(Range(1, 1))(Range(1, 1)).get shouldEqual 8
+  }
+
+  "modify for the element 5" should "update the leaf value" in {
+    assert(tree.modify(1)(0)(0)(500))
+    tree.query(Range(0, 0))(Range(0, 0))(Range(0, 0)).get shouldEqual 100
+    tree.query(Range(0, 0))(Range(0, 0))(Range(1, 1)).get shouldEqual 200
+    tree.query(Range(0, 0))(Range(1, 1))(Range(0, 0)).get shouldEqual 300
+    tree.query(Range(0, 0))(Range(1, 1))(Range(1, 1)).get shouldEqual 400
+    tree.query(Range(1, 1))(Range(0, 0))(Range(0, 0)).get shouldEqual 500
+    tree.query(Range(1, 1))(Range(0, 0))(Range(1, 1)).get shouldEqual 6
+    tree.query(Range(1, 1))(Range(1, 1))(Range(0, 0)).get shouldEqual 7
+    tree.query(Range(1, 1))(Range(1, 1))(Range(1, 1)).get shouldEqual 8
+  }
+
+  "modify for the element 6" should "update the leaf value" in {
+    assert(tree.modify(1)(0)(1)(600))
+    tree.query(Range(0, 0))(Range(0, 0))(Range(0, 0)).get shouldEqual 100
+    tree.query(Range(0, 0))(Range(0, 0))(Range(1, 1)).get shouldEqual 200
+    tree.query(Range(0, 0))(Range(1, 1))(Range(0, 0)).get shouldEqual 300
+    tree.query(Range(0, 0))(Range(1, 1))(Range(1, 1)).get shouldEqual 400
+    tree.query(Range(1, 1))(Range(0, 0))(Range(0, 0)).get shouldEqual 500
+    tree.query(Range(1, 1))(Range(0, 0))(Range(1, 1)).get shouldEqual 600
+    tree.query(Range(1, 1))(Range(1, 1))(Range(0, 0)).get shouldEqual 7
+    tree.query(Range(1, 1))(Range(1, 1))(Range(1, 1)).get shouldEqual 8
+  }
+
+  "modify for the element 7" should "update the leaf value" in {
+    assert(tree.modify(1)(1)(0)(700))
+    tree.query(Range(0, 0))(Range(0, 0))(Range(0, 0)).get shouldEqual 100
+    tree.query(Range(0, 0))(Range(0, 0))(Range(1, 1)).get shouldEqual 200
+    tree.query(Range(0, 0))(Range(1, 1))(Range(0, 0)).get shouldEqual 300
+    tree.query(Range(0, 0))(Range(1, 1))(Range(1, 1)).get shouldEqual 400
+    tree.query(Range(1, 1))(Range(0, 0))(Range(0, 0)).get shouldEqual 500
+    tree.query(Range(1, 1))(Range(0, 0))(Range(1, 1)).get shouldEqual 600
+    tree.query(Range(1, 1))(Range(1, 1))(Range(0, 0)).get shouldEqual 700
+    tree.query(Range(1, 1))(Range(1, 1))(Range(1, 1)).get shouldEqual 8
+  }
+
+  "modify for the element 8" should "update the leaf value" in {
+    assert(tree.modify(1)(1)(1)(800))
+    tree.query(Range(0, 0))(Range(0, 0))(Range(0, 0)).get shouldEqual 100
+    tree.query(Range(0, 0))(Range(0, 0))(Range(1, 1)).get shouldEqual 200
+    tree.query(Range(0, 0))(Range(1, 1))(Range(0, 0)).get shouldEqual 300
+    tree.query(Range(0, 0))(Range(1, 1))(Range(1, 1)).get shouldEqual 400
+    tree.query(Range(1, 1))(Range(0, 0))(Range(0, 0)).get shouldEqual 500
+    tree.query(Range(1, 1))(Range(0, 0))(Range(1, 1)).get shouldEqual 600
+    tree.query(Range(1, 1))(Range(1, 1))(Range(0, 0)).get shouldEqual 700
+    tree.query(Range(1, 1))(Range(1, 1))(Range(1, 1)).get shouldEqual 800
+  }
 }
