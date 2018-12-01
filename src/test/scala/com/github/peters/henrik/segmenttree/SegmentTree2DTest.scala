@@ -5,6 +5,7 @@
 // ---------------------------------------------------------------------
 package com.github.peters.henrik.segmenttree
 
+import Range._
 import org.scalatest.{FlatSpec, Matchers}
 
 class SegmentTree2DTest extends FlatSpec with Matchers {
@@ -448,5 +449,70 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
         case _: Throwable => false
       }
     }
+  }
+
+  val generate2DSubranges: Seq[Seq[Int]] => List[(Range,Range)] = matrix => {
+    val yRootRange = Range(0, matrix.length - 1)
+    val xRootRange = Range(0, matrix.head.length - 1)
+
+    for {
+      y <- subranges(yRootRange)
+      x <- subranges(xRootRange)
+    } yield (y, x)
+  }
+
+  val generate2DInvalidSubranges: Seq[Seq[Int]] => List[(Range,Range)] = matrix => {
+    val yRootRange = Range(0, matrix.length - 1)
+    val xRootRange = Range(0, matrix.head.length - 1)
+
+    val yRightRange = Range(matrix.length, matrix.length + 3)
+    val xRightRange = Range(matrix.head.length, matrix.head.length + 3)
+    val negativeRange = Range(-3, -1)
+
+    val rightOf = for {
+      y <- subranges(yRightRange)
+      x <- subranges(xRightRange)
+    } yield (y, x)
+
+    val leftOf = for {
+      y <- subranges(negativeRange)
+      x <- subranges(negativeRange)
+    } yield (y, x)
+
+    leftOf ::: rightOf
+  }
+
+  val test: Seq[Seq[Int]] => Unit = matrix => {
+    val loopQuery = new LoopQuery2D(matrix, IntegerAddition)
+    val tree: SegmentTree2D[Int] = SegmentTree2D.fromMatrix(matrix, IntegerAddition)
+
+    val valids = generate2DSubranges(matrix)
+    val invalids = generate2DInvalidSubranges(matrix)
+
+    valids.foreach(pair => {
+      val treeResult = tree.query(pair._1)(pair._2)
+      val loopResult = loopQuery.query(pair._1)(pair._2)
+
+      treeResult shouldEqual loopResult
+      treeResult should not equal Option.empty
+      loopResult should not equal Option.empty
+    })
+
+    invalids.foreach(pair => {
+      val treeResult = tree.query(pair._1)(pair._2)
+      val loopResult = loopQuery.query(pair._1)(pair._2)
+
+      treeResult shouldEqual loopResult
+      treeResult shouldEqual Option.empty
+      loopResult shouldEqual Option.empty
+    })
+  }
+
+  "The loop range implementation" should "match with the tree implementation" in {
+    test{Seq(
+      Seq(1, 2, 3),
+      Seq(4, 5, 6),
+      Seq(7, 8, 9)
+    )}
   }
 }
