@@ -5,6 +5,8 @@
 // ---------------------------------------------------------------------
 package com.github.peters.henrik.segmenttree
 
+import Range._
+import scala.util.Random
 import org.scalatest.{FlatSpec, Matchers}
 
 class SegmentTreeTest extends FlatSpec with Matchers {
@@ -379,5 +381,97 @@ class SegmentTreeTest extends FlatSpec with Matchers {
     val sndTree = SegmentTree.fromSequence(Seq(3, 2), IntegerAddition)
     assert(!fstTree.equals(sndTree))
     assert(!sndTree.equals(fstTree))
+  }
+
+  class LoopQuery(sequence: Seq[Int], monoid: Monoid[Int]){
+    val array: Array[Int] = sequence.toArray
+
+    def query(range: Range): Option[Int] = {
+      try {
+        var accumulator = monoid.identity
+
+        for (x <- range.start to range.end) {
+          accumulator = monoid.fold(accumulator, array(x))
+        }
+
+        Some(accumulator)
+      } catch {
+        case _: Throwable => None
+      }
+    }
+
+    def modify(x: Int)(newValue: Int): Boolean = {
+      try {
+        array(x) = newValue
+        true
+      } catch {
+        case _: Throwable => false
+      }
+    }
+
+  }
+
+  val test: Seq[Int] => Unit = sequence => {
+    val loopQuery = new LoopQuery(sequence, IntegerAddition)
+    val tree: SegmentTree[Int] = SegmentTree.fromSequence(sequence, IntegerAddition)
+    val length = sequence.length
+
+    val valids = subranges(tree.rootRange)
+    val elements = sequence.indices.toList
+    val invalids = subranges(Range(-3, -1)) :::
+      subranges(Range(length, length + 3)) :::
+      List(Range(0, length), Range(0, length + 1), Range(0, length + 2)) :::
+      List(Range(-1, length), Range(-2, length + 1), Range(-3, length + 2))
+
+    def testQueries(): Unit = {
+      valids.foreach(range => {
+        val treeResult = tree.query(range)
+        val loopResult = loopQuery.query(range)
+
+        treeResult shouldEqual loopResult
+        treeResult should not equal Option.empty
+        loopResult should not equal Option.empty
+      })
+
+      invalids.foreach(range => {
+        val treeResult = tree.query(range)
+        val loopResult = loopQuery.query(range)
+
+        treeResult shouldEqual loopResult
+        treeResult shouldEqual Option.empty
+        loopResult shouldEqual Option.empty
+      })
+    }
+
+    testQueries()
+    val modifyCycles = 3
+    val random = new Random(sequence.head)
+
+    for (_ <- 0 until modifyCycles) {
+      elements.foreach(x => {
+        val newValue = random.nextInt(300)
+        val treeModify = tree.modify(x, newValue)
+        val loopModify = loopQuery.modify(x)(newValue)
+
+        treeModify shouldEqual loopModify
+        treeModify shouldEqual true
+        loopModify shouldEqual true
+        testQueries()
+      })
+    }
+  }
+
+  "The loop implementation" should "match with the tree implementation" in {
+    test{Seq(7)}
+    test{Seq(3, 2)}
+    test{Seq(5, 4, 1)}
+    test{Seq(8, 7, 6, 2)}
+    test{Seq(4, 1, 9, 8, 3)}
+    test{Seq(9, 2, 3, 4, 5, 6)}
+    test{Seq(1, 3, 7, 9, 4, 5, 3)}
+    test{Seq(6, 8, 4, 3, 2, 1, 8, 3)}
+    test{Seq(2, 7, 3, 9, 4, 5, 2, 3, 8)}
+    test{Seq(7, 3, 2, 1, 9, 8, 4, 2, 1, 3, 7, 8, 3, 4, 2,
+             1, 4, 5, 7, 8, 3, 1, 4, 5, 8, 6, 1, 3, 4, 7)}
   }
 }
