@@ -479,7 +479,27 @@ class SegmentTree2DTest extends FlatSpec with Matchers {
       x <- subranges(negativeRange)
     } yield (y, x)
 
-    leftOf ::: rightOf
+    val yInvalids = for {
+      y <- subranges(yRightRange)
+      x <- subranges(xRootRange)
+    } yield (y, x)
+
+    val xInvalids = for {
+      y <- subranges(yRootRange)
+      x <- subranges(xRightRange)
+    } yield (y, x)
+
+    val yTooBig = for {
+      y <- List(Range(0, matrix.length))
+      x <- subranges(xRootRange)
+    } yield (y, x)
+
+    val xTooBig = for {
+      y <- subranges(yRootRange)
+      x <- List(Range(0, matrix.head.length))
+    } yield (y, x)
+
+    leftOf ::: rightOf ::: yInvalids ::: xInvalids ::: yTooBig ::: xTooBig
   }
 
   val test: Seq[Seq[Int]] => Unit = matrix => {
