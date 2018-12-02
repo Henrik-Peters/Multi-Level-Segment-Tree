@@ -6,7 +6,7 @@
 
     <groupId>com.github.peters.henrik.segmenttree</groupId>
     <artifactId>multi-level-segment-tree</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <name>${project.artifactId}</name>
     <description>Generic multi-dimensional segment tree implementation for range queries</description>
     <inceptionYear>2018</inceptionYear>
