@@ -287,12 +287,25 @@ class SegmentTree3DTest extends FlatSpec with Matchers {
     rightOf ::: leftOf ::: zInvalids ::: yInvalids ::: xInvalids ::: zTooBig ::: yTooBig ::: xTooBig
   }
 
+  val generate3DSingleElementRanges: Seq[Seq[Seq[Int]]] => List[(Int,Int,Int)] = tensor => {
+    val zElements = tensor.indices.toList
+    val yElements = tensor.head.indices.toList
+    val xElements = tensor.head.head.indices.toList
+
+    for {
+      z <- zElements
+      y <- yElements
+      x <- xElements
+    } yield (z, y, x)
+  }
+
   val test: Seq[Seq[Seq[Int]]] => Unit = tensor => {
     val loopQuery = new LoopQuery3D(tensor, IntegerAddition)
     val tree: SegmentTree3D[Int] = SegmentTree3D.fromTensor(tensor, IntegerAddition)
 
     val valids = generate3DSubranges(tensor)
     val invalids = generate3DInvalidSubranges(tensor)
+    val elements = generate3DSingleElementRanges(tensor)
 
     def testQueries(): Unit = {
       valids.foreach(triple => {
@@ -315,6 +328,21 @@ class SegmentTree3DTest extends FlatSpec with Matchers {
     }
 
     testQueries()
+    val modifyCycles = 3
+    val random = new Random(tensor.head.head.head)
+
+    for (_ <- 0 until modifyCycles) {
+      elements.foreach(elem => {
+        val newValue = random.nextInt(300)
+        val treeModify = tree.modify(elem._1)(elem._2)(elem._3)(newValue)
+        val loopModify = loopQuery.modify(elem._1)(elem._2)(elem._3)(newValue)
+
+        treeModify shouldEqual loopModify
+        treeModify shouldEqual true
+        loopModify shouldEqual true
+        testQueries()
+      })
+    }
   }
 
   "The loop range implementation" should "match with the 3D tree implementation" in {
