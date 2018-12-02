@@ -248,7 +248,43 @@ class SegmentTree3DTest extends FlatSpec with Matchers {
       x <- subranges(negativeRange)
     } yield (z, y, x)
 
-    rightOf ::: leftOf
+    val zInvalids = for {
+      z <- subranges(zRightRange)
+      y <- subranges(yRootRange)
+      x <- subranges(xRootRange)
+    } yield (z, y, x)
+
+    val yInvalids = for {
+      z <- subranges(zRootRange)
+      y <- subranges(yRightRange)
+      x <- subranges(xRootRange)
+    } yield (z, y, x)
+
+    val xInvalids = for {
+      z <- subranges(zRootRange)
+      y <- subranges(yRootRange)
+      x <- subranges(xRightRange)
+    } yield (z, y, x)
+
+    val zTooBig = for {
+      z <- List(Range(0, zRootRange.end + 1))
+      y <- subranges(yRootRange)
+      x <- subranges(xRootRange)
+    } yield (z, y, x)
+
+    val yTooBig = for {
+      z <- subranges(zRootRange)
+      y <- List(Range(0, yRootRange.end + 1))
+      x <- subranges(xRootRange)
+    } yield (z, y, x)
+
+    val xTooBig = for {
+      z <- subranges(zRootRange)
+      y <- subranges(yRootRange)
+      x <- List(Range(0, xRootRange.end + 1))
+    } yield (z, y, x)
+
+    rightOf ::: leftOf ::: zInvalids ::: yInvalids ::: xInvalids ::: zTooBig ::: yTooBig ::: xTooBig
   }
 
   val test: Seq[Seq[Seq[Int]]] => Unit = tensor => {
