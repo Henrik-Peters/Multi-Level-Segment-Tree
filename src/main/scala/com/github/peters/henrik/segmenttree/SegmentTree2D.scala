@@ -7,6 +7,7 @@ package com.github.peters.henrik.segmenttree
 
 import TreeMonoid._
 import scala.language.postfixOps
+import java.util.Objects
 
 /**
   * Factory singleton for creating two-dimensional segment trees.
@@ -75,6 +76,10 @@ class SegmentTree2D[T](
 
       case _ => false
     }
+  }
+
+  override def hashCode(): Int = {
+    Objects.hash(root, monoid)
   }
 
   override def toString: String = root.toString

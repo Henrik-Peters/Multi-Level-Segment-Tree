@@ -6,6 +6,7 @@
 package com.github.peters.henrik.segmenttree
 
 import scala.sys.process._
+import java.util.Objects
 import java.io.{File, PrintWriter}
 
 /**
@@ -155,6 +156,10 @@ class SegmentTree[T](private val root: TreeNode[T], val monoid: Monoid[T]) {
 
       case _ => false
     }
+  }
+
+  override def hashCode(): Int = {
+    Objects.hash(root, monoid)
   }
 
   override def toString: String = root.toString

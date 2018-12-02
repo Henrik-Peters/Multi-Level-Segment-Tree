@@ -6,7 +6,12 @@
 package com.github.peters.henrik.segmenttree
 
 import TreeMonoid._
+import java.util.Objects
 
+/**
+  * Factory singleton for creating three-dimensional segment trees.
+  * Trees are built from tthree-dimensional data collections with monoids.
+  */
 object SegmentTree3D {
   def fromTensor[T](tensor: Seq[Seq[Seq[T]]], monoid: Monoid[T]): SegmentTree3D[T] = {
     val leafs = tensor.map(matrix => SegmentTree2D.fromMatrix(matrix, monoid)).map(tree => tree.tree)
@@ -16,6 +21,15 @@ object SegmentTree3D {
   }
 }
 
+/**
+  * Defines the three-dimensional segment tree, which is constructed
+  * from the companion object.
+  *
+  * @param root The top level node of the tree
+  * @param monoid Used to fold the final elements in the tree
+  * @param treeMonoid Used to fold the segment trees
+  * @tparam T Type of the final elements stored in the tree
+  */
 class SegmentTree3D[T](
   private val root: TreeNode[SegmentTree[SegmentTree[T]]],
   val monoid: Monoid[T],
@@ -69,6 +83,10 @@ class SegmentTree3D[T](
 
       case _ => false
     }
+  }
+
+  override def hashCode(): Int = {
+    Objects.hash(root, monoid)
   }
 
   override def toString: String = root.toString
