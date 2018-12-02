@@ -76,4 +76,6 @@ class SegmentTree2D[T](
       case _ => false
     }
   }
+
+  override def toString: String = root.toString
 }

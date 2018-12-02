@@ -157,6 +157,8 @@ class SegmentTree[T](private val root: TreeNode[T], val monoid: Monoid[T]) {
     }
   }
 
+  override def toString: String = root.toString
+
   private def invariant(node: TreeNode[T] = root): Boolean = {
     node match {
       case Node(segment, value, left, right) =>
