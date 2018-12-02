@@ -5,6 +5,8 @@
 // ---------------------------------------------------------------------
 package com.github.peters.henrik.segmenttree
 
+import Range._
+import scala.util.Random
 import org.scalatest.{FlatSpec, Matchers}
 
 class SegmentTree3DTest extends FlatSpec with Matchers {
@@ -179,5 +181,110 @@ class SegmentTree3DTest extends FlatSpec with Matchers {
     tree.query(Range(1, 1))(Range(0, 0))(Range(1, 1)).get shouldEqual 600
     tree.query(Range(1, 1))(Range(1, 1))(Range(0, 0)).get shouldEqual 700
     tree.query(Range(1, 1))(Range(1, 1))(Range(1, 1)).get shouldEqual 800
+  }
+
+  class LoopQuery3D(matrix: Seq[Seq[Seq[Int]]], monoid: Monoid[Int]){
+    val array: Array[Array[Array[Int]]] = matrix.toArray.map(_.toArray.map(_.toArray))
+
+    def query(zRange: Range)(yRange: Range)(xRange: Range): Option[Int] = {
+      try {
+        var accumulator = monoid.identity
+
+        for (z <- zRange.start to zRange.end) {
+          for (y <- yRange.start to yRange.end) {
+            for (x <- xRange.start to xRange.end) {
+              accumulator = monoid.fold(accumulator, array(z)(y)(x))
+            }
+          }
+        }
+
+        Some(accumulator)
+      } catch {
+        case _: Throwable => None
+      }
+    }
+
+    def modify(z: Int)(y: Int)(x: Int)(newValue: Int): Boolean = {
+      try {
+        array(z)(y)(x) = newValue
+        true
+      } catch {
+        case _: Throwable => false
+      }
+    }
+  }
+
+  val generate3DSubranges: Seq[Seq[Seq[Int]]] => List[(Range,Range,Range)] = tensor => {
+    val zRootRange = Range(0, tensor.length - 1)
+    val yRootRange = Range(0, tensor.head.length - 1)
+    val xRootRange = Range(0, tensor.head.head.length - 1)
+
+    for {
+      z <- subranges(zRootRange)
+      y <- subranges(yRootRange)
+      x <- subranges(xRootRange)
+    } yield (z, y, x)
+  }
+
+  val generate3DInvalidSubranges: Seq[Seq[Seq[Int]]] => List[(Range,Range,Range)] = tensor => {
+    val zRootRange = Range(0, tensor.length - 1)
+    val yRootRange = Range(0, tensor.head.length - 1)
+    val xRootRange = Range(0, tensor.head.head.length - 1)
+
+    val zRightRange = Range(zRootRange.end + 1, zRootRange.end + 2)
+    val yRightRange = Range(yRootRange.end + 1, yRootRange.end + 2)
+    val xRightRange = Range(xRootRange.end + 1, xRootRange.end + 2)
+    val negativeRange = Range(-2, -1)
+
+    val rightOf = for {
+      z <- subranges(zRightRange)
+      y <- subranges(yRightRange)
+      x <- subranges(xRightRange)
+    } yield (z, y, x)
+
+    val leftOf = for {
+      z <- subranges(negativeRange)
+      y <- subranges(negativeRange)
+      x <- subranges(negativeRange)
+    } yield (z, y, x)
+
+    rightOf ::: leftOf
+  }
+
+  val test: Seq[Seq[Seq[Int]]] => Unit = tensor => {
+    val loopQuery = new LoopQuery3D(tensor, IntegerAddition)
+    val tree: SegmentTree3D[Int] = SegmentTree3D.fromTensor(tensor, IntegerAddition)
+
+    val valids = generate3DSubranges(tensor)
+    val invalids = generate3DInvalidSubranges(tensor)
+
+    def testQueries(): Unit = {
+      valids.foreach(triple => {
+        val treeResult = tree.query(triple._1)(triple._2)(triple._3)
+        val loopResult = loopQuery.query(triple._1)(triple._2)(triple._3)
+
+        treeResult shouldEqual loopResult
+        treeResult should not equal Option.empty
+        loopResult should not equal Option.empty
+      })
+
+      invalids.foreach(triple => {
+        val treeResult = tree.query(triple._1)(triple._2)(triple._3)
+        val loopResult = loopQuery.query(triple._1)(triple._2)(triple._3)
+
+        treeResult shouldEqual loopResult
+        treeResult shouldEqual Option.empty
+        loopResult shouldEqual Option.empty
+      })
+    }
+
+    testQueries()
+  }
+
+  "The loop range implementation" should "match with the 3D tree implementation" in {
+    test{Seq(
+      Seq(Seq(1, 2), Seq(3, 4)),
+      Seq(Seq(5, 6), Seq(7, 8))
+    )}
   }
 }
