@@ -350,5 +350,17 @@ class SegmentTree3DTest extends FlatSpec with Matchers {
       Seq(Seq(1, 2), Seq(3, 4)),
       Seq(Seq(5, 6), Seq(7, 8))
     )}
+
+    test{Seq(
+      Seq(Seq(2, 1,  3,  4),  Seq(5,  6,  7,  8)),
+      Seq(Seq(9, 10, 11, 12), Seq(13, 14, 15, 16))
+    )}
+
+    test{Seq(
+      Seq(Seq(4, 3), Seq(3, 6)),
+      Seq(Seq(3, 8), Seq(9, 5)),
+      Seq(Seq(1, 9), Seq(2, 3)),
+      Seq(Seq(7, 3), Seq(5, 4))
+    )}
   }
 }
